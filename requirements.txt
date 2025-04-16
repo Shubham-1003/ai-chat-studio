@@ -1,0 +1,16 @@
+streamlit
+openai
+google-generativeai
+anthropic
+mistralai
+# requests # Uncomment if needed for DeepSeek/Meta or other HTTP APIs
+pymupdf # For PDF parsing
+python-docx # For DOCX parsing
+pillow # For Image handling
+nbformat # For Jupyter Notebook parsing
+# --- Optional Dependencies ---
+# pytesseract # For OCR - Requires Tesseract installation: https://github.com/tesseract-ocr/tesseract
+# pdf2image # For converting PDF pages to images (often needed for PDF OCR) - Requires poppler installation
+# easyocr # Alternative OCR library
+# groq # Example if using Groq for Llama models
+# python-dotenv # If using .env files for API keys locally
