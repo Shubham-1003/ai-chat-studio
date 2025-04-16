@@ -1,0 +1,10 @@
+[theme]
+primaryColor="#1a73e8"  # Google Blue
+backgroundColor="#ffffff"  # White background
+secondaryBackgroundColor="#f1f3f4" # Light grey for sidebar/cards
+textColor="#202124" # Dark grey text
+font="sans serif"
+
+[server]
+# Allows viewing CSS changes without restarting Streamlit server fully
+runOnSave = true
