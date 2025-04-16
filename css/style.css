@@ -1,0 +1,147 @@
+/* General Styling */
+body {
+    font-family: 'sans serif';
+}
+
+/* --- Remove Streamlit Header/Footer --- */
+/* Hide the Streamlit header */
+/* More specific selector to avoid interfering with other headers */
+/* div[data-testid="stToolbar"] {
+ visibility: hidden;
+ height: 0%;
+ position: fixed;
+ } */
+
+/* Hide the Streamlit footer */
+/* div[data-testid="stDecoration"] {
+ visibility: hidden;
+ height: 0%;
+ position: fixed;
+ } */
+/* header {
+    visibility: hidden;
+    height: 0;
+    } */
+/* footer {
+    visibility: hidden;
+    height: 0;
+    } */
+#MainMenu {
+    visibility: hidden;
+    }
+/* --- Sidebar Styling --- */
+[data-testid="stSidebar"] {
+    background-color: var(--secondaryBackgroundColor);
+    border-right: 1px solid #dadce0;
+    padding: 1rem;
+}
+
+[data-testid="stSidebar"] h2 {
+    color: #1a73e8; /* Google Blue for titles */
+    font-weight: 500;
+}
+
+[data-testid="stSidebar"] .stButton>button {
+    border-radius: 20px;
+    border: 1px solid #dadce0;
+    color: #1a73e8; /* Google Blue text */
+    background-color: #ffffff; /* White background */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-testid="stSidebar"] .stButton>button:hover {
+    background-color: #e8f0fe; /* Light blue hover */
+    border: 1px solid #1a73e8;
+    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.302), 0 4px 8px 3px rgba(60,64,67,0.149);
+}
+
+[data-testid="stSidebar"] .stFileUploader label {
+    font-weight: 500;
+    color: #3c4043;
+}
+
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stTextInput label {
+    font-weight: 500;
+    color: #3c4043;
+}
+
+[data-testid="stSidebar"] [data-testid="stExpander"] {
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-bottom: 1rem;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] summary {
+    font-weight: 500;
+    color: #3c4043;
+}
+
+/* --- Main Chat Area Styling --- */
+.stChatFloatingInputContainer {
+     /* Attempt to make input stick */
+    position: sticky;
+    bottom: 0;
+    background-color: var(--backgroundColor);
+    padding: 1rem 0;
+    box-shadow: 0 -1px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+    border-top: 1px solid #dadce0;
+}
+
+[data-testid="stChatInput"] {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 24px; /* Rounded input */
+    padding: 0.5rem 1rem;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+}
+
+[data-testid="stChatMessage"] {
+    background-color: #f1f3f4; /* Light grey background for messages */
+    border-radius: 18px; /* Rounded corners */
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1); /* Soft shadow */
+    max-width: 85%; /* Limit message width */
+    border: 1px solid #e0e0e0;
+}
+
+[data-testid="stChatMessage"] p {
+    margin: 0; /* Remove default paragraph margin */
+}
+
+/* User message alignment */
+[data-testid="stChatMessage"][data-testid="chatAvatarIcon-user"] {
+    background-color: #e8f0fe; /* Lighter blue for user */
+    margin-left: auto; /* Align user messages to the right */
+    margin-right: 0;
+    border: 1px solid #d2e3fc;
+}
+
+
+/* Styling for Download Buttons within chat */
+[data-testid="stChatMessage"] .stDownloadButton>button {
+    border-radius: 15px;
+    border: 1px solid #dadce0;
+    color: #1a73e8; /* Google Blue text */
+    background-color: #ffffff; /* White background */
+    margin-top: 0.5rem; /* Add space above button */
+}
+[data-testid="stChatMessage"] .stDownloadButton>button:hover {
+    background-color: #e8f0fe; /* Light blue hover */
+    border: 1px solid #1a73e8;
+}
+
+/* File card styling (placeholder) */
+.file-card {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9em;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1);
+}
+.file-card strong {
+    color: #1a73e8;
+}
