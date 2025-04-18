@@ -1,55 +1,39 @@
-/* css/style.css - Bright & Vibrant Gradient Theme */
+/* css/style.css - Neobrutalist Theme */
 
-/* --- Global Settings & Light Theme Variables --- */
+/* --- Global Settings & Neobrutalist Variables --- */
 :root {
-    /* Vibrant Gradient */
-    --grad-start: #6DD5FA;  /* Light Blue */
-    --grad-end: #B7F8DB;    /* Light Mint Green */
-    --accent-solid: #52A6F8; /* Solid Blue for contrast */
-
-    /* Backgrounds */
-    --bg-primary: #FFFFFF;        /* Pure white */
-    --bg-secondary: #F7F9FC;     /* Very light off-white */
-    --bg-sidebar: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-
-    /* Text */
-    --text-primary: #202124;    /* Dark Grey (Google style) */
-    --text-secondary: #5F6368;  /* Medium Grey */
-    --text-on-gradient: #1E1E1E; /* Dark text for gradient buttons */
-    --text-on-accent: #FFFFFF;   /* White text for solid accent buttons */
-
-    /* Borders & Shadows */
-    --border-color: #EAECEF;     /* Light grey border */
-    --border-radius: 10px;
-    --box-shadow-light: 0 3px 6px rgba(0, 0, 0, 0.05);
-    --box-shadow-focus: 0 0 0 3px rgba(82, 166, 248, 0.3); /* Focus ring */
+    --bg-primary: #FFFFFF;        /* White Background */
+    --bg-secondary: #F0F0F0;     /* Light Grey for subtle contrast */
+    --accent-primary: #00FF00;   /* LIME GREEN Accent */
+    --accent-secondary: #00CC00; /* Darker Lime for hover/borders */
+    --text-color: #000000;       /* Black Text */
+    --border-color: #000000;      /* Black Borders */
 
     /* Chat Bubbles */
-    --user-message-bg: var(--bg-secondary); /* User on left - light grey */
-    --user-message-border: var(--border-color);
-    --user-message-text: var(--text-primary);
-    --assistant-message-bg: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%); /* AI on right - gradient */
-    --assistant-message-border: transparent;
-    --assistant-message-text: var(--text-on-gradient);
+    --user-message-bg: var(--bg-primary);
+    --assistant-message-bg: var(--bg-primary);
 
+    --font-family: 'Arial', 'Helvetica', sans-serif; /* Simple, standard font */
+    --border-width: 2px;
+    --hard-shadow-offset: 5px; /* Offset for the hard shadow */
+    --hard-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--border-color); /* X Y Blur Spread Color */
+    --border-radius: 0px; /* NO border radius */
 
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --transition-speed: 0.2s;
+    --transition-speed: 0.15s; /* Faster transitions */
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 /* Apply base styles */
 body {
     font-family: var(--font-family);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
+    background-color: var(--bg-secondary); /* Light grey main background */
+    color: var(--text-color);
+    line-height: 1.5;
     margin: 0;
 }
 
 *, *::before, *::after {
     box-sizing: border-box;
+    border-radius: var(--border-radius) !important; /* FORCE sharp edges globally */
 }
 
 /* --- Hide Streamlit Default Branding --- */
@@ -61,140 +45,136 @@ div[data-testid="stDecoration"],
 
 /* Adjust main container padding */
 .main .block-container {
-    padding-top: 2.5rem;
-    padding-bottom: 8rem; /* More space for sticky input */
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
+    padding: 2rem;
+    padding-bottom: 8rem; /* Space for input */
 }
 
-/* --- Sidebar Styling --- */
+/* --- Sidebar Styling (Stark Panel) --- */
 [data-testid="stSidebar"] {
-    background: var(--bg-sidebar);
-    border-right: 1px solid var(--border-color);
-    padding: 2rem 1.5rem;
-    box-shadow: var(--box-shadow-light);
+    background-color: var(--bg-primary); /* White sidebar */
+    border-right: var(--border-width) solid var(--border-color);
+    padding: 1.5rem;
+    box-shadow: var(--hard-shadow); /* Apply hard shadow */
 }
 
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
-    color: var(--text-primary);
-    font-weight: 600;
+    color: var(--text-color);
+    font-weight: bold;
     margin-bottom: 1rem;
+    letter-spacing: 0.5px;
 }
 /* Sidebar Title Specific */
 [data-testid="stSidebar"] h1 {
-     background: linear-gradient(90deg, var(--grad-start) 0%, var(--accent-solid) 100%);
-     -webkit-background-clip: text;
-     background-clip: text;
-     color: transparent;
-     font-weight: 600;
+     border-bottom: var(--border-width) solid var(--border-color);
+     padding-bottom: 0.5rem;
 }
-
 
 /* Sidebar Button Styling */
 [data-testid="stSidebar"] .stButton>button {
-    background: var(--accent-solid);
-    color: var(--text-on-accent);
-    font-weight: 500;
-    border: none;
-    border-radius: var(--border-radius);
+    background: var(--accent-primary);
+    color: var(--text-color);
+    font-weight: bold;
+    border: var(--border-width) solid var(--border-color);
     padding: 0.7rem 1.4rem;
     transition: all var(--transition-speed) ease;
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--hard-shadow);
     width: 100%;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
 [data-testid="stSidebar"] .stButton>button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(82, 166, 248, 0.3);
-    filter: brightness(1.1);
+    background: var(--accent-secondary);
+    box-shadow: none; /* Remove shadow on hover */
+    transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset)); /* Move button into shadow space */
 }
+[data-testid="stSidebar"] .stButton>button:active {
+     background: var(--accent-secondary);
+     box-shadow: none;
+     transform: translate(calc(var(--hard-shadow-offset) - 2px), calc(var(--hard-shadow-offset) - 2px)); /* Slight press effect */
+}
+
 
 /* Sidebar Inputs & Selectors */
 [data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div,
 [data-testid="stSidebar"] .stTextInput input {
     background-color: var(--bg-primary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    color: var(--text-color);
+    border: var(--border-width) solid var(--border-color);
     padding: 0.7rem 1rem;
-    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+    transition: none; /* No transition */
+    box-shadow: none;
 }
 [data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div:focus-within,
 [data-testid="stSidebar"] .stTextInput input:focus {
-    border-color: var(--accent-solid);
-    box-shadow: var(--box-shadow-focus);
+    border-color: var(--accent-primary); /* Accent border on focus */
+    box-shadow: none;
     outline: none;
 }
 /* Placeholder text color */
 [data-testid="stSidebar"] .stTextInput input::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.8;
+    color: #888; /* Grey placeholder */
+    opacity: 1;
 }
 
 /* Sidebar File Uploader */
 [data-testid="stFileUploader"] {
-    border: 2px dashed var(--border-color);
-    border-radius: var(--border-radius);
+    border: var(--border-width) dashed var(--border-color);
     padding: 1.5rem;
     background-color: var(--bg-secondary);
     text-align: center;
-    transition: all var(--transition-speed) ease;
+    transition: none;
 }
 [data-testid="stFileUploader"]:hover {
-    border-color: var(--accent-solid);
-    background-color: #EBF4FF; /* Light blue tint */
+    border-color: var(--accent-primary);
+    background-color: #E0E0E0;
 }
 [data-testid="stFileUploader"] label {
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-weight: normal;
+    color: var(--text-color);
 }
 [data-testid="stFileUploader"] svg {
-    color: var(--accent-solid);
+    color: var(--text-color);
 }
 
 /* Sidebar Expanders (File Cards) */
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--border-color);
     background-color: var(--bg-primary);
     margin-bottom: 1rem;
-    box-shadow: var(--box-shadow-light);
-    transition: box-shadow var(--transition-speed) ease;
+    box-shadow: var(--hard-shadow);
+    transition: none;
 }
 [data-testid="stSidebar"] [data-testid="stExpander"]:hover {
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
+     border-color: var(--accent-primary);
+     box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-primary); /* Accent shadow on hover */
 }
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-    font-weight: 500;
-    color: var(--text-primary);
+    font-weight: bold;
+    color: var(--text-color);
     padding: 0.8rem 1rem;
-}
-[data-testid="stSidebar"] [data-testid="stExpander"] summary:hover {
-    color: var(--accent-solid);
 }
 [data-testid="stSidebar"] [data-testid="stExpander"] .stCodeBlock,
 [data-testid="stSidebar"] [data-testid="stExpander"] pre {
     background-color: var(--bg-secondary) !important;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--border-color) !important;
     padding: 0.75rem 1rem;
     margin-top: 0.5rem;
-    color: var(--text-secondary) !important;
+    color: var(--text-color) !important;
+    box-shadow: none;
 }
 
 /* --- Main Chat Area Styling --- */
 /* Main Area Header */
 .main .block-container > div:first-child h1,
-.main .block-container > div:first-child h3 { /* Target H3 used for model name */
-     color: var(--text-primary);
-     text-align: center;
-     margin-bottom: 2.5rem;
-     font-weight: 500;
-     letter-spacing: 0.5px;
+.main .block-container > div:first-child h3 {
+     color: var(--text-color);
+     text-align: left; /* Align left */
+     margin-bottom: 2rem;
+     font-weight: bold;
+     font-size: 1.8rem; /* Larger header */
 }
 
 /* Chat Input Container - Sticky */
@@ -203,90 +183,86 @@ div[data-testid="stDecoration"],
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, #ffffff 60%, rgba(255, 255, 255, 0)); /* Fade white background */
-    padding: 1.5rem 2.5rem 2rem 2.5rem;
+    background: var(--bg-secondary); /* Solid background */
+    padding: 1rem 2rem 1.5rem 2rem;
     z-index: 10;
     width: 100%;
+    border-top: var(--border-width) solid var(--border-color);
 }
 
 /* Chat Input Box */
 [data-testid="stChatInput"] {
     background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 28px; /* More rounded pill shape */
-    padding: 0.8rem 1.2rem 0.8rem 1.8rem; /* Adjust padding */
-    box-shadow: var(--box-shadow-light);
-    transition: all var(--transition-speed) ease;
-    position: relative; /* For potential pseudo elements */
+    border: var(--border-width) solid var(--border-color);
+    padding: 0.5rem 1rem; /* Adjust padding */
+    box-shadow: var(--hard-shadow);
+    transition: none;
+    position: relative;
 }
 [data-testid="stChatInput"] > div {
     background-color: transparent;
 }
 [data-testid="stChatInput"]:focus-within {
-    border-color: var(--accent-solid);
-    box-shadow: var(--box-shadow-focus), var(--box-shadow-light); /* Combine shadows */
+    border-color: var(--accent-primary);
+    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-primary); /* Accent shadow on focus */
 }
 /* Input text */
 [data-testid="stChatInput"] textarea {
-    color: var(--text-primary);
+    color: var(--text-color);
     font-size: 1rem;
+    line-height: 1.4; /* Adjust line height for input */
 }
 [data-testid="stChatInput"] textarea::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.9;
+    color: #888;
+    opacity: 1;
 }
-/* Send button styling (Streamlit internal might change) */
+/* Send button styling */
 [data-testid="stChatInput"] button[kind="icon"] {
-     background: var(--accent-solid);
-     border-radius: 50%;
-     fill: var(--text-on-accent); /* Change SVG color */
+     background: var(--bg-primary);
+     border: var(--border-width) solid var(--border-color);
+     fill: var(--text-color);
+     box-shadow: var(--hard-shadow);
      transition: all var(--transition-speed) ease;
+     margin-left: 0.5rem; /* Space between text and button */
 }
 [data-testid="stChatInput"] button[kind="icon"]:hover {
-     background: var(--grad-start);
-     fill: var(--text-on-gradient);
+     background: var(--accent-primary);
+     box-shadow: none;
+     transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset));
 }
 
 
-/* --- CHAT MESSAGE LAYOUT REVERSED --- */
+/* --- CHAT MESSAGE LAYOUT (User Left, AI Right) --- */
 
 /* Chat Messages General Style */
 [data-testid="stChatMessage"] {
-    padding: 0.9rem 1.4rem;
-    border-radius: var(--border-radius);
-    margin-bottom: 1.2rem;
-    max-width: 78%; /* Slightly wider max */
-    box-shadow: var(--box-shadow-light);
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem; /* More space between messages */
+    max-width: 75%;
     word-wrap: break-word;
     position: relative;
-    border: 1px solid; /* Use border for differentiation */
-    animation: messageFadeIn 0.3s ease-out forwards;
-    opacity: 0;
+    background-color: var(--bg-primary);
+    border: var(--border-width) solid var(--border-color);
+    box-shadow: var(--hard-shadow);
+    transition: none; /* No animations */
+    opacity: 1 !important; /* Ensure visibility */
+    transform: none !important; /* Ensure no transform */
 }
 
-@keyframes messageFadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
 
 /* USER MESSAGES (LEFT ALIGNED) */
 [data-testid="stChatMessage"][data-testid*="user"] {
-    background-color: var(--user-message-bg);
-    color: var(--user-message-text);
-    border-color: var(--user-message-border);
-    margin-right: auto; /* ALIGN LEFT */
+    margin-right: auto;
     margin-left: 0;
-    border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 0; /* Bottom-left tail */
+    /* No unique background needed, relies on border/shadow */
 }
 
 /* AI ASSISTANT MESSAGES (RIGHT ALIGNED) */
 [data-testid="stChatMessage"]:not([data-testid*="user"]) {
-    background: var(--assistant-message-bg);
-    color: var(--assistant-message-text);
-    border-color: var(--assistant-message-border); /* Transparent border for gradient */
-    margin-left: auto; /* ALIGN RIGHT */
+    margin-left: auto;
     margin-right: 0;
-    border-radius: var(--border-radius) var(--border-radius) 0 var(--border-radius); /* Bottom-right tail */
+    border-color: var(--accent-secondary); /* Use accent color for AI border */
+    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-secondary); /* Accent shadow */
 }
 
 
@@ -303,94 +279,95 @@ div[data-testid="stDecoration"],
 /* Styling for text content within messages */
 [data-testid="stChatMessage"] p {
     margin: 0;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 [data-testid="stChatMessage"] strong {
-    font-weight: 600;
+    font-weight: bold;
 }
 
 /* Styling for Code Blocks */
 [data-testid="stChatMessage"] code { /* Inline code */
-    background-color: rgba(0, 0, 0, 0.05);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
+    background-color: var(--bg-secondary);
+    padding: 0.1em 0.3em;
     font-size: 0.9em;
-    color: var(--accent-solid);
+    border: 1px solid var(--border-color); /* Border inline code */
+    color: var(--text-color);
 }
 [data-testid="stChatMessage"] pre { /* Code block */
-    background-color: #2d2d2d !important; /* Dark background for contrast */
-    color: #f1f1f1 !important; /* Light text */
+    background-color: var(--text-color) !important; /* Black background */
+    color: var(--accent-primary) !important; /* Lime Green text */
     padding: 1rem 1.2rem;
-    border-radius: var(--border-radius);
     overflow-x: auto;
     margin: 0.75rem 0;
-    border: 1px solid #444;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    border: var(--border-width) solid var(--accent-primary); /* Accent border */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+    box-shadow: none;
 }
 [data-testid="stChatMessage"] pre code {
     background-color: transparent !important;
     padding: 0;
     color: inherit !important;
-    font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: inherit !important;
+    border: none;
 }
 
 /* Download Button inside Chat Messages */
 [data-testid="stChatMessage"] .stDownloadButton>button {
-    background-color: var(--accent-solid);
-    color: var(--text-on-accent);
-    border: none;
-    border-radius: var(--border-radius);
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+    border: var(--border-width) solid var(--border-color);
     padding: 0.5rem 1rem;
     font-size: 0.9em;
     margin-top: 0.75rem;
     transition: all var(--transition-speed) ease;
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--hard-shadow);
+    font-weight: bold;
 }
 
 [data-testid="stChatMessage"] .stDownloadButton>button:hover {
-    filter: brightness(1.15);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(82, 166, 248, 0.3);
+    background-color: var(--accent-primary);
+    box-shadow: none;
+    transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset));
 }
 
 
 /* --- Utility & Misc --- */
 hr {
     border: none;
-    border-top: 1px solid var(--border-color);
+    border-top: var(--border-width) solid var(--border-color);
     margin: 2rem 0;
 }
 
 /* Improve default Streamlit Info/Warning/Error boxes */
 [data-testid="stAlert"] {
-    border-radius: var(--border-radius);
-    border-width: 0 0 0 4px; /* Left border */
-    border-style: solid;
-    box-shadow: var(--box-shadow-light);
+    border: var(--border-width) solid var(--border-color);
     padding: 1rem 1.2rem;
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+    box-shadow: var(--hard-shadow);
+    margin-bottom: 1rem;
 }
 [data-testid="stAlert"] p { margin: 0; }
 
 /* Specific alert types */
 [data-testid="stAlert"][data-baseweb="alert"][role="alert"] { /* Info */
-    border-color: #1890FF; /* Standard Blue */
-    background-color: #E6F7FF;
-    color: #0050B3;
+    border-color: var(--accent-secondary); /* Use accent */
+    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-secondary);
 }
 [data-testid="stAlert"][data-baseweb="alert"][role="status"] { /* Success */
-     border-color: #52C41A; /* Green */
-     background-color: #F6FFED;
-     color: #389E0D;
+     border-color: #00A300; /* Darker Green */
+     box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #00A300;
+     background-color: #DFF2BF; /* Light green bg */
 }
 [data-testid="stAlert"][data-baseweb="alert"][role="alertdialog"] { /* Error */
-    border-color: #FF4D4F; /* Red */
-    background-color: #FFF1F0;
-    color: #CF1322;
+    border-color: #D8000C; /* Strong Red */
+    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #D8000C;
+    background-color: #FFBABA; /* Light red bg */
+    color: #D8000C; /* Red text */
+    font-weight: bold;
 }
 [data-testid="stAlert"][data-baseweb="alert"][role="log"] { /* Warning */
-    border-color: #FAAD14; /* Orange/Yellow */
-    background-color: #FFFBE6;
-    color: #D48806;
+    border-color: #FFCC00; /* Yellow/Orange */
+    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #FFCC00;
+    background-color: #FFFFAA; /* Light yellow bg */
 }
