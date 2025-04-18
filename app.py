@@ -1,4 +1,4 @@
-# app.py (Updated for Streamlit Secrets)
+# app.py (Updated for Streamlit Secrets & NVIDIA Models)
 
 import streamlit as st
 from PIL import Image
@@ -96,12 +96,15 @@ with st.sidebar:
     # --- API Key Status (Using Secrets) ---
     st.subheader("🔑 API Keys Status")
     st.caption("Checking for API keys in `.streamlit/secrets.toml`")
+    # Optional clarification about NVIDIA key:
+    st.caption("Note: The 'NVIDIA_API_KEY' (or 'DEEPSEEK_API') is used for models hosted on NVIDIA NIM.")
 
     keys_loaded_from_secrets = {}
     required_key_name_for_selected = llm_api.get_required_api_key_name(st.session_state.selected_model)
     required_key_found = False
 
     if required_key_name_for_selected:
+        # Use st.secrets as a dictionary-like object
         if required_key_name_for_selected in st.secrets:
             keys_loaded_from_secrets[required_key_name_for_selected] = st.secrets[required_key_name_for_selected]
             required_key_found = True
@@ -166,13 +169,18 @@ with st.sidebar:
         # Sort files alphabetically by name for consistent order
         sorted_filenames = sorted(st.session_state.uploaded_file_data.keys())
         for filename in sorted_filenames:
-            data = st.session_state.uploaded_file_data[filename]
-            display_file_card(filename, data["metadata"])
+            if filename in st.session_state.uploaded_file_data: # Check if key exists before accessing
+                data = st.session_state.uploaded_file_data[filename]
+                display_file_card(filename, data["metadata"])
+            else:
+                 st.warning(f"Data for {filename} not found in session state. Skipping display.")
+
 
         # Add clear button outside the loop
         if st.button("Clear All Files"):
             st.session_state.uploaded_file_data = {}
-            st.session_state.messages.append({"role": "system", "content": "All uploaded files have been cleared."})
+            # Optionally add a system message about clearing files
+            # st.session_state.messages.append({"role": "system", "content": "All uploaded files have been cleared."})
             st.rerun()
 
 
@@ -265,6 +273,8 @@ if prompt:
             st.error(f"An error occurred while communicating with the LLM: {e}")
             # Add error to chat history for context
             error_message = f"Sorry, I encountered an error trying to get a response: {e}"
-            st.session_state.messages.append({"role": "assistant", "content": error_message})
+            # Avoid appending duplicate error messages if the API call failed directly
+            if not st.session_state.messages or st.session_state.messages[-1].get("content") != error_message:
+                st.session_state.messages.append({"role": "assistant", "content": error_message})
             # Update the placeholder directly with the error
-            message_placeholder.markdown(error_message)
+            message_placeholder.error(error_message) # Use st.error for better visibility
