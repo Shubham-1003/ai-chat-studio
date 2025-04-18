@@ -1,147 +1,312 @@
-/* General Styling */
-body {
-    font-family: 'sans serif';
+/* css/style.css */
+
+/* --- Global Settings & Variables --- */
+:root {
+    --primary-color: #6a5acd; /* Slate Blue / Purple */
+    --primary-light: #836FFF; /* Lighter shade for hover */
+    --secondary-color: #F0F2F6; /* Light grey background */
+    --sidebar-bg: #FFFFFF;
+    --card-bg: #FFFFFF;
+    --text-color: #1E1E1E; /* Darker text */
+    --text-light: #555555; /* Lighter text for captions/secondary info */
+    --border-color: #E0E0E0; /* Softer border color */
+    --accent-color: #FF6B6B; /* Example accent for warnings/errors */
+
+    --user-message-bg: #E6E0FF; /* Light lavender for user */
+    --assistant-message-bg: #FFFFFF;
+
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --border-radius-lg: 16px; /* Larger radius for cards/messages */
+    --border-radius-md: 12px;
+    --border-radius-sm: 8px;
+    --box-shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --box-shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
 }
 
-/* --- Remove Streamlit Header/Footer --- */
-/* Hide the Streamlit header */
-/* More specific selector to avoid interfering with other headers */
-/* div[data-testid="stToolbar"] {
- visibility: hidden;
- height: 0%;
- position: fixed;
- } */
+/* Apply base styles */
+body {
+    font-family: var(--font-family);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0; /* Ensure no default body margin */
+}
 
-/* Hide the Streamlit footer */
-/* div[data-testid="stDecoration"] {
- visibility: hidden;
- height: 0%;
- position: fixed;
- } */
-/* header {
-    visibility: hidden;
-    height: 0;
-    } */
-/* footer {
-    visibility: hidden;
-    height: 0;
-    } */
+/* Apply box-sizing globally for predictable layouts */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- Hide Streamlit Default Branding --- */
+/* Use display: none !important cautiously, as updates might break this */
+div[data-testid="stToolbar"],
+div[data-testid="stDecoration"],
 #MainMenu {
-    visibility: hidden;
-    }
+    display: none !important;
+}
+
+/* Adjust main container padding if header removal causes issues */
+.main .block-container {
+    padding-top: 2rem; /* Add some top padding */
+    padding-bottom: 6rem; /* Add padding below chat to avoid overlap with sticky input */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
 /* --- Sidebar Styling --- */
 [data-testid="stSidebar"] {
-    background-color: var(--secondaryBackgroundColor);
-    border-right: 1px solid #dadce0;
-    padding: 1rem;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow-subtle);
 }
 
-[data-testid="stSidebar"] h2 {
-    color: #1a73e8; /* Google Blue for titles */
-    font-weight: 500;
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] h4 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
 }
 
+/* Sidebar Button Styling */
 [data-testid="stSidebar"] .stButton>button {
-    border-radius: 20px;
-    border: 1px solid #dadce0;
-    color: #1a73e8; /* Google Blue text */
-    background-color: #ffffff; /* White background */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: 0.7rem 1.4rem;
+    font-weight: 500;
+    transition: all var(--transition-speed) ease;
+    box-shadow: var(--box-shadow-subtle);
+    width: 100%; /* Make buttons fill width */
+    margin-bottom: 0.5rem;
 }
 
 [data-testid="stSidebar"] .stButton>button:hover {
-    background-color: #e8f0fe; /* Light blue hover */
-    border: 1px solid #1a73e8;
-    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.302), 0 4px 8px 3px rgba(60,64,67,0.149);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-medium);
+    filter: brightness(1.1);
 }
 
-[data-testid="stSidebar"] .stFileUploader label {
+/* Sidebar Inputs & Selectors */
+[data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stTextInput input {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--card-bg);
+    padding: 0.6rem 0.8rem;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+[data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div:focus-within,
+[data-testid="stSidebar"] .stTextInput input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2); /* Focus ring */
+}
+
+/* Sidebar File Uploader */
+[data-testid="stFileUploader"] {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    background-color: var(--secondary-color);
+    text-align: center;
+    transition: border-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+[data-testid="stFileUploader"]:hover {
+    border-color: var(--primary-color);
+    background-color: #e6e0ff; /* Light lavender on hover */
+}
+[data-testid="stFileUploader"] label {
     font-weight: 500;
-    color: #3c4043;
+    color: var(--text-light);
 }
 
-[data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stTextInput label {
-    font-weight: 500;
-    color: #3c4043;
-}
-
+/* Sidebar Expanders (File Cards) */
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: var(--card-bg);
     margin-bottom: 1rem;
+    box-shadow: none;
+    transition: box-shadow var(--transition-speed) ease;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"]:hover {
+     box-shadow: var(--box-shadow-subtle);
 }
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
     font-weight: 500;
-    color: #3c4043;
+    color: var(--text-color);
+    padding: 0.8rem 1rem;
+}
+[data-testid="stSidebar"] [data-testid="stExpander"] .stCodeBlock,
+[data-testid="stSidebar"] [data-testid="stExpander"] pre {
+    background-color: var(--secondary-color) !important; /* Override default code background */
+    border-radius: var(--border-radius-sm);
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
 }
 
 /* --- Main Chat Area Styling --- */
+
+/* Chat Input Container - Sticky at bottom */
 .stChatFloatingInputContainer {
-     /* Attempt to make input stick */
-    position: sticky;
+    position: sticky; /* Attempt sticky positioning */
     bottom: 0;
-    background-color: var(--backgroundColor);
-    padding: 1rem 0;
-    box-shadow: 0 -1px 5px rgba(0,0,0,0.1); /* Subtle shadow */
-    border-top: 1px solid #dadce0;
+    left: 0; /* Ensure it spans full width */
+    right: 0;
+    background: linear-gradient(to top, var(--secondary-color) 60%, rgba(240, 242, 246, 0)); /* Fade background */
+    padding: 1rem 1.5rem 1.5rem 1.5rem; /* Match block-container padding */
+    margin: 0; /* Remove default margins */
+    z-index: 10; /* Keep on top */
+    border-top: 1px solid transparent; /* Needed for gradient blending */
+    width: 100%;
 }
 
+/* Chat Input Box */
 [data-testid="stChatInput"] {
-    background-color: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 24px; /* Rounded input */
-    padding: 0.5rem 1rem;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    border-radius: 25px; /* Pill shape */
+    padding: 0.75rem 1.5rem; /* Adjust padding */
+    box-shadow: var(--box-shadow-medium);
+    transition: box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+[data-testid="stChatInput"] > div { /* Target inner container if needed */
+    background-color: transparent; /* Ensure inner divs don't block background */
+}
+[data-testid="stChatInput"]:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
+/* Chat Messages General Style */
 [data-testid="stChatMessage"] {
-    background-color: #f1f3f4; /* Light grey background for messages */
-    border-radius: 18px; /* Rounded corners */
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1); /* Soft shadow */
-    max-width: 85%; /* Limit message width */
-    border: 1px solid #e0e0e0;
+    padding: 0.9rem 1.3rem;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1rem;
+    max-width: 75%; /* Limit width */
+    box-shadow: var(--box-shadow-subtle);
+    border: none; /* Remove default borders */
+    word-wrap: break-word;
+    position: relative; /* For potential pseudo-elements later */
+    animation: messageFadeIn 0.4s ease-out;
+    transition: background-color var(--transition-speed) ease; /* Smooth bg changes */
 }
 
-[data-testid="stChatMessage"] p {
-    margin: 0; /* Remove default paragraph margin */
+/* Simple fade-in animation for new messages */
+@keyframes messageFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* User message alignment */
-[data-testid="stChatMessage"][data-testid="chatAvatarIcon-user"] {
-    background-color: #e8f0fe; /* Lighter blue for user */
-    margin-left: auto; /* Align user messages to the right */
+/* Assistant Messages (Left Aligned) */
+[data-testid="stChatMessage"]:not([data-testid*="user"]) { /* Select non-user messages */
+    background-color: var(--assistant-message-bg);
+    color: var(--text-color);
+    margin-right: auto;
+    margin-left: 0;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) var(--border-radius-lg) 0; /* Tail effect bottom-left */
+}
+
+/* User Messages (Right Aligned) */
+[data-testid="stChatMessage"][data-testid*="user"] { /* Select user messages */
+    background-color: var(--user-message-bg);
+    color: #333; /* Slightly darker text */
+    margin-left: auto;
     margin-right: 0;
-    border: 1px solid #d2e3fc;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 var(--border-radius-lg); /* Tail effect bottom-right */
 }
 
-
-/* Styling for Download Buttons within chat */
-[data-testid="stChatMessage"] .stDownloadButton>button {
-    border-radius: 15px;
-    border: 1px solid #dadce0;
-    color: #1a73e8; /* Google Blue text */
-    background-color: #ffffff; /* White background */
-    margin-top: 0.5rem; /* Add space above button */
+/* Optional: Hide default Streamlit avatar icons */
+/*
+[data-testid="stChatMessage"] [data-testid^="chatAvatarIcon"] {
+    display: none;
 }
-[data-testid="stChatMessage"] .stDownloadButton>button:hover {
-    background-color: #e8f0fe; /* Light blue hover */
-    border: 1px solid #1a73e8;
+[data-testid="stChatMessage"] > div:first-child { margin-left: 0 !important; margin-right: 0 !important; }
+*/
+
+
+/* Styling for text content within messages */
+[data-testid="stChatMessage"] p {
+    margin: 0;
+    line-height: 1.5;
 }
 
-/* File card styling (placeholder) */
-.file-card {
-    background-color: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    margin: 0.5rem 0;
+/* Styling for Code Blocks within messages */
+[data-testid="stChatMessage"] code {
+    background-color: rgba(0,0,0,0.05); /* Subtle inline code background */
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
     font-size: 0.9em;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.1);
+    color: var(--primary-color); /* Highlight inline code */
 }
-.file-card strong {
-    color: #1a73e8;
+[data-testid="stChatMessage"] pre {
+    background-color: #282c34 !important; /* Dark background for code blocks */
+    color: #abb2bf !important; /* Light text */
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    overflow-x: auto; /* Allow horizontal scroll */
+    margin: 0.5rem 0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+[data-testid="stChatMessage"] pre code {
+    background-color: transparent !important; /* Code inside pre should be transparent */
+    padding: 0;
+    color: inherit !important; /* Inherit color from pre */
+}
+
+/* Download Button inside Chat Messages */
+[data-testid="stChatMessage"] .stDownloadButton>button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9em;
+    margin-top: 0.75rem; /* Space above button */
+    transition: all var(--transition-speed) ease;
+    box-shadow: var(--box-shadow-subtle);
+}
+
+[data-testid="stChatMessage"] .stDownloadButton>button:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Utility & Misc --- */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0;
+}
+
+/* Improve default Streamlit Info/Warning/Error boxes */
+[data-testid="stAlert"] {
+    border-radius: var(--border-radius-md);
+    border: none;
+    box-shadow: var(--box-shadow-subtle);
+    padding: 1rem;
+}
+[data-testid="stAlert"] p { margin: 0; } /* Remove extra margin */
+/* Specific alert types (optional color override) */
+[data-testid="stAlert"][data-baseweb="alert"][role="alert"] { /* Info */
+    background-color: #e6f7ff;
+    color: #005f87;
+}
+[data-testid="stAlert"][data-baseweb="alert"][role="status"] { /* Success */
+     background-color: #e6fffb;
+     color: #006d75;
+}
+[data-testid="stAlert"][data-baseweb="alert"][role="alertdialog"] { /* Error */
+    background-color: #fff1f0;
+    color: #a8071a;
+}
+[data-testid="stAlert"][data-baseweb="alert"][role="log"] { /* Warning */
+    background-color: #fffbe6;
+    color: #ad6800;
 }
