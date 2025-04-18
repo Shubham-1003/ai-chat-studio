@@ -1,4 +1,4 @@
-# app.py (Claude's Attempt - Completed Logic, WITH CAVEATS)
+# app.py (Claude's Attempt - Syntax Error Fixed, Markdown Added)
 
 import streamlit as st
 from PIL import Image
@@ -6,6 +6,7 @@ import io
 import os
 import time
 import random
+import markdown # Requires: pip install markdown python-markdown-math (optional for math)
 # Assuming these util files exist and work as expected
 from utils import llm_api, file_parser
 
@@ -74,16 +75,12 @@ footer { visibility: hidden; }
 [data-testid="stSidebar"] .stSelectbox [data-testid="stMarkdownContainer"] p { color: #343541; } /* Text inside selectbox dropdown */
 
 /* Chat message styling */
-/* Use divs instead of stChatMessage directly */
-.chat-message-container { /* New class to wrap messages */
-    padding-bottom: 10px; /* Space between messages */
+.chat-message-container { /* Wrapper for messages */
+    padding-bottom: 10px;
 }
 
 .chat-message {
-    display: flex;
-    padding: 1rem; /* Smaller padding */
-    margin: 0 auto; /* Center message block */
-    max-width: 48rem; /* Match block-container */
+    display: flex; padding: 1rem; margin: 0 auto; max-width: 48rem;
 }
 .chat-message.user { background-color: #ffffff; }
 .chat-message.bot { background-color: #f7f7f8; }
@@ -98,39 +95,33 @@ footer { visibility: hidden; }
 .chat-message .message-content {
     padding-top: 3px; overflow-wrap: break-word; width: 100%;
 }
-/* Ensure markdown content inside message-content renders correctly */
-.message-content p, .message-content ul, .message-content ol, .message-content pre { margin-bottom: 0.5em; }
-.message-content pre { background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 6px; overflow-x: auto; font-size: 0.9em; }
-.message-content code:not(pre code) { font-size: 90%; background-color: rgba(0,0,0,0.05); padding: 0.2em 0.4em; border-radius: 3px; }
+/* Styles for markdown content rendered as HTML */
+.message-content p, .message-content ul, .message-content ol { margin-bottom: 0.5em; line-height: 1.6; }
+.message-content ul, .message-content ol { padding-left: 1.5em; }
+.message-content pre { background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.9em; margin: 0.5em 0; font-family: monospace; }
+.message-content code:not(pre code) { font-size: 90%; background-color: rgba(0,0,0,0.07); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace;}
+.message-content strong { font-weight: 600; }
+.message-content em { font-style: italic; }
+.message-content table { border-collapse: collapse; width: auto; margin: 0.5em 0; }
+.message-content th, .message-content td { border: 1px solid #ccc; padding: 6px 10px; text-align: left;}
+.message-content th { background-color: #eee; font-weight: 600; }
 
 /* Chat input area styling */
 .chat-input-area-wrapper { /* Wrapper to handle positioning */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%); /* Fade effect */
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 70%, #ffffff 100%); /* Fade effect */
     padding-top: 2rem; /* Space for fade */
-    z-index: 99;
+    z-index: 99; pointer-events: none; /* Allow clicks through wrapper */
 }
-
 .chat-input-area {
-    padding: 1rem; /* Padding inside the area */
-    background-color: #ffffff;
-    border-top: 1px solid #e5e5e5;
-    max-width: 48rem;
-    margin: 0 auto; /* Center input area */
-    display: flex;
-    flex-direction: column; /* Allow staging area above input */
+    padding: 1rem; background-color: #ffffff; border-top: 1px solid #e5e5e5;
+    max-width: 48rem; margin: 0 auto; /* Center input area */
+    display: flex; flex-direction: column; /* Allow staging area above input */
+    pointer-events: auto; /* Enable interaction for the area itself */
 }
 
 /* Staging area styles */
-.staging-area {
-    margin-bottom: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
+.staging-area { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
 .file-badge {
     display: inline-flex; align-items: center; background-color: #f0f0f0;
     padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;
@@ -145,65 +136,55 @@ footer { visibility: hidden; }
 
 /* Container for input row */
 .chat-input-row {
-    display: flex;
-    align-items: flex-end; /* Align items to bottom (for attach button) */
-    background-color: #ffffff;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-    padding: 0.5rem 0.75rem; /* Adjusted padding */
+    display: flex; align-items: flex-end; background-color: #ffffff;
+    border: 1px solid #e5e5e5; border-radius: 12px; padding: 0.5rem 0.75rem;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-
 .file-upload-button {
-    border: none; background: transparent; color: #6e6e80;
-    cursor: pointer; padding: 5px; /* Adjust padding */
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2em; /* Icon size */
-    margin-right: 8px; /* Space between icon and textarea */
-    height: 32px; /* Match button height */
-    width: 32px; /* Match button width */
+    border: none; background: transparent; color: #6e6e80; cursor: pointer; padding: 5px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2em;
+    margin-right: 8px; height: 32px; width: 32px; flex-shrink: 0;
 }
 .file-upload-button:hover { color: #10a37f; }
 
-.chat-input-textarea { /* Target the specific textarea */
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    resize: none;
-    font-size: 1rem; /* Match common chat font size */
-    line-height: 1.5;
-    padding: 4px 0; /* Minimal vertical padding */
-    background: transparent;
-    max-height: 200px; /* Limit growth */
-    overflow-y: auto; /* Add scroll if needed */
-    color: #343541; /* Match body text */
-    align-self: center; /* Vertically center text */
+.chat-input-textarea {
+    flex-grow: 1; border: none; outline: none; resize: none; font-size: 1rem;
+    line-height: 1.5; padding: 4px 0; background: transparent; max-height: 200px;
+    overflow-y: auto; color: #343541; align-self: center;
 }
-
 .chat-submit-button {
     width: 32px; height: 32px; border-radius: 8px; background-color: #10a37f;
     color: white; display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background-color 0.2s; border: none;
-    margin-left: 8px; /* Space between textarea and button */
-    flex-shrink: 0;
+    margin-left: 8px; flex-shrink: 0;
 }
 .chat-submit-button:hover { background-color: #0c8d6e; }
 .chat-submit-button:disabled { background-color: #cccccc; color: #888888; cursor: not-allowed; }
 
 /* Thinking animation */
-/* ... (thinking animation CSS remains the same) ... */
+@keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.8; } 100% { opacity: 0.3; } }
+.thinking-animation { display: flex; align-items: center; margin-top: 8px; }
+.thinking-dot { height: 8px; width: 8px; border-radius: 50%; background-color: #10a37f; margin-right: 4px; animation: pulse 1.5s infinite; }
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
 
-/* Ensure main content area has enough bottom margin */
-.main {
-    padding-bottom: 150px; /* Adjust this value based on chat input area height */
+/* Ensure main content area has enough bottom padding */
+.main { padding-bottom: 150px; /* Adjust if input area height changes significantly */ }
+
+/* Hidden File Uploader Styling */
+/* Attempt to hide the default Streamlit file uploader elements triggered by the button */
+div[data-testid="stFileUploader"] {
+     /* Position it off-screen or hide using opacity/size */
+     /* This is very brittle */
+     position: absolute;
+     width: 1px;
+     height: 1px;
+     opacity: 0;
+     z-index: -10;
 }
 
-/* Hide actual st.file_uploader widget (assuming it's triggered differently) */
-/* This CSS might hide it even when you need it, be careful */
-/* div[data-testid="stFileUploader"] > section { display: none; } */
-
 /* Welcome screen styling */
-/* ... (welcome screen CSS remains the same) ... */
+/* (Code remains the same) */
 
 </style>
 
@@ -212,48 +193,50 @@ footer { visibility: hidden; }
 <script>
     // Function to auto-resize textarea
     function autoGrow(element) {
-        element.style.height = 'auto'; // Temporarily shrink to get scrollHeight
-        element.style.height = (element.scrollHeight) + 'px';
+        if (element) {
+            element.style.height = 'auto'; // Temporarily shrink to get scrollHeight
+            // Min height of 24px approx (1 line)
+            element.style.height = Math.max(24, element.scrollHeight) + 'px';
+        }
     }
 
     // Attach event listener to the correct textarea
-    // Need to run this periodically or on mutation as Streamlit rerenders
     function attachListeners() {
-        const textarea = document.querySelector('textarea[aria-label="Your message"]'); // Find textarea by label
+        const textarea = document.querySelector('textarea[aria-label="Your message"]');
         if (textarea && !textarea.dataset.listenerAttached) {
+            // console.log("Attaching listeners to textarea");
             textarea.addEventListener('input', () => autoGrow(textarea));
             textarea.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    // Find the hidden Streamlit button by its key (needs exact match)
-                    const sendButton = document.querySelector('button[data-testid="baseButton-secondary"] span:contains("Send")');
-                    // More robust: Use a specific key for the hidden button if possible
-                    const hiddenSendButton = document.querySelector('button[data-testid="stButton"] span:contains("HiddenSendTrigger")')?.closest('button');
-
+                    // Find the hidden Streamlit button by its key
+                    const hiddenSendButton = document.getElementById('hidden-send-trigger-button'); // Use ID now
                     if (hiddenSendButton) {
-                         hiddenSendButton.click();
+                        // console.log("Enter pressed, clicking hidden send button");
+                        hiddenSendButton.click();
                     } else {
-                         console.error("Hidden Send button not found");
-                         // Fallback or alternative trigger method needed if this fails
+                         console.error("Hidden Send button not found by ID");
                     }
                 }
             });
-            textarea.dataset.listenerAttached = 'true'; // Mark as attached
+            textarea.dataset.listenerAttached = 'true';
             autoGrow(textarea); // Initial resize
         }
 
-        // Attach listeners to remove buttons (less reliable with rerenders)
+        // Attach listeners to remove buttons - find by unique key/id if possible
          const removeButtons = document.querySelectorAll('.remove-btn');
          removeButtons.forEach(btn => {
              if (!btn.dataset.listenerAttached) {
+                //  console.log("Attaching listener to remove button");
+                 const index = btn.dataset.index;
+                 const hiddenRemoveButtonId = `remove-btn-${index}-hidden`; // Construct ID
                  btn.addEventListener('click', function() {
-                     // Logic to trigger corresponding hidden Streamlit remove button
-                     const index = this.dataset.index; // Assuming index is set correctly
-                     const hiddenRemoveButton = document.querySelector(`button[data-testid="stButton"] span:contains("RemoveFile${index}")`)?.closest('button');
+                     const hiddenRemoveButton = document.getElementById(hiddenRemoveButtonId);
                      if (hiddenRemoveButton) {
+                        //  console.log(`Remove clicked, clicking hidden button: ${hiddenRemoveButtonId}`);
                          hiddenRemoveButton.click();
                      } else {
-                         console.error(`Hidden Remove button for index ${index} not found`);
+                         console.error(`Hidden Remove button not found by ID: ${hiddenRemoveButtonId}`);
                      }
                  });
                  btn.dataset.listenerAttached = 'true';
@@ -261,19 +244,25 @@ footer { visibility: hidden; }
          });
     }
 
-    // Run attachListeners initially and potentially on Streamlit updates
-    document.addEventListener('DOMContentLoaded', attachListeners);
-    // Might need MutationObserver for robustness, but adds complexity
+    // Use MutationObserver for more robustness against Streamlit rerenders
+    const observer = new MutationObserver((mutationsList, observer) => {
+        // Look for changes and re-attach listeners if necessary
+        // This might be too aggressive, depends on how often DOM changes
+        attachListeners();
+    });
 
-    // Custom event listener for toggling dropzone (if using JS toggle)
-    // document.addEventListener('toggle-dropzone', toggle_dropzone_js_function);
+    // Start observing the document body for configured mutations
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Initial call
+    document.addEventListener('DOMContentLoaded', attachListeners);
 
 </script>
 """, unsafe_allow_html=True)
 
 
 # --- Session State Initialization ---
-# (Same as provided by Claude, assuming it's correct for the intended logic)
+# (Same as before)
 if "messages" not in st.session_state: st.session_state.messages = []
 if "selected_model" not in st.session_state:
     available_models = list(llm_api.SUPPORTED_MODELS.keys())
@@ -282,42 +271,38 @@ if "api_keys" not in st.session_state: st.session_state.api_keys = {}
 if "uploaded_file_data" not in st.session_state: st.session_state.uploaded_file_data = {}
 if "stop_app" not in st.session_state: st.session_state.stop_app = False
 if "staged_files" not in st.session_state: st.session_state.staged_files = [] # List to hold UploadedFile objects
-if "show_dropzone" not in st.session_state: st.session_state.show_dropzone = False # To toggle the explicit dropzone UI
 if "thinking" not in st.session_state: st.session_state.thinking = False
 if "current_chat_id" not in st.session_state: st.session_state.current_chat_id = "chat_" + str(int(time.time()))
 if "chat_history" not in st.session_state: st.session_state.chat_history = {st.session_state.current_chat_id: {"title": "New Chat", "messages": []}}
-# Add example queries if not present (or use Claude's examples)
 if "example_queries" not in st.session_state:
     st.session_state.example_queries = [
-        "Explain quantum computing", "Suggest Python libraries for data analysis",
-        "Write a short story about a lost robot", "How does photosynthesis work?"
+        "Explain quantum computing", "Suggest Python libraries",
+        "Write a short story", "How does photosynthesis work?"
     ]
 
 
-# --- Helper Functions (Adapted from Claude's code) ---
+# --- Helper Functions ---
 def create_new_chat():
-    # (Same as Claude's version)
+    # (Same as before)
     chat_id = "chat_" + str(int(time.time()))
     st.session_state.chat_history[chat_id] = {"title": "New Chat", "messages": []}
     st.session_state.current_chat_id = chat_id
     st.session_state.messages = []
     st.session_state.uploaded_file_data = {}
     st.session_state.staged_files = []
-    st.session_state.show_dropzone = False
     st.rerun()
 
 def load_chat(chat_id):
-    # (Same as Claude's version)
+    # (Same as before)
     if chat_id in st.session_state.chat_history:
         st.session_state.current_chat_id = chat_id
-        st.session_state.messages = st.session_state.chat_history[chat_id].get("messages", []) # Use .get for safety
-        st.session_state.uploaded_file_data = st.session_state.chat_history[chat_id].get("context_files", {}) # Assuming context is saved per chat
-        st.session_state.staged_files = [] # Clear staging when loading
-        st.session_state.show_dropzone = False
+        st.session_state.messages = st.session_state.chat_history[chat_id].get("messages", [])
+        st.session_state.uploaded_file_data = st.session_state.chat_history[chat_id].get("context_files", {})
+        st.session_state.staged_files = []
         st.rerun()
 
 def update_chat_title():
-    # (Same as Claude's version)
+    # (Same as before)
     if st.session_state.messages and st.session_state.messages[0]["role"] == "user":
         first_message = st.session_state.messages[0]["content"]
         title = first_message[:30] + "..." if len(first_message) > 30 else first_message
@@ -325,19 +310,29 @@ def update_chat_title():
 
 def display_chat_message(message):
     """Display a single chat message using custom HTML"""
-    # (Adapted from Claude's - uses markdown HTML)
     role = message["role"]
     content = message["content"]
     avatar_icon = "U" if role == "user" else "🤖"
     avatar_class = "user" if role == "user" else "bot"
     message_class = "user" if role == "user" else "bot"
 
-    # Basic escaping (replace with more robust library if needed)
-    content_html = content.replace("&", "&").replace("<", "<").replace(">", ">")
-    # You might need markdown conversion here if content includes markdown
-    # import markdown
-    # content_html = markdown.markdown(content, extensions=['fenced_code', 'codehilite'])
+    # --- Convert actual markdown within content to HTML ---
+    # This is crucial for displaying formatting like lists, bold, code blocks correctly
+    try:
+        # Configure extensions for common markdown features
+        # python-markdown-math for latex (optional)
+        extensions = ['fenced_code', 'codehilite', 'tables', 'nl2br', 'sane_lists']
+        content_html = markdown.markdown(content, extensions=extensions)
+    except ImportError:
+        st.warning("`markdown` library not found. Formatting may be limited. `pip install markdown`", icon="⚠️")
+        # Fallback: Basic HTML escaping and replace newlines with <br>
+        content_html = content.replace("&", "&").replace("<", "<").replace(">", ">").replace("\n", "<br>")
+    except Exception as md_err:
+        st.error(f"Markdown processing error: {md_err}")
+        content_html = content.replace("&", "&").replace("<", "<").replace(">", ">").replace("\n", "<br>")
 
+
+    # Display using markdown with unsafe_allow_html
     st.markdown(f"""
     <div class="chat-message-container">
         <div class="chat-message {message_class}">
@@ -345,7 +340,7 @@ def display_chat_message(message):
                 <span>{avatar_icon}</span>
             </div>
             <div class="message-content">
-                 {content_html} {/* Display potentially processed HTML */}
+                 {content_html}  {/* Display processed HTML */}
             </div>
         </div>
     </div>
@@ -353,80 +348,53 @@ def display_chat_message(message):
 
 
 def remove_staged_file(file_index_to_remove):
-    """Remove file using Streamlit button callback logic"""
-    # This function is now triggered by hidden Streamlit buttons
+    """Remove file triggered by hidden button"""
+    # (Same logic as before)
     try:
         if 0 <= file_index_to_remove < len(st.session_state.staged_files):
             removed_file = st.session_state.staged_files.pop(file_index_to_remove)
             st.toast(f"Removed {removed_file.name}")
-            if not st.session_state.staged_files:
-                st.session_state.show_dropzone = False
-            st.rerun() # Rerun needed to update the display
-    except IndexError:
-        st.warning("Could not remove file, index out of range.")
-    except Exception as e:
-        st.error(f"Error removing file: {e}")
+            st.rerun()
+    except IndexError: pass
+    except Exception as e: st.error(f"Error removing file: {e}")
 
 
 def process_staged_files():
     """Process staged files and add to context (triggered on send)"""
-    # (Adapted from Claude's, uses standard status)
+    # (Same logic as before)
     processed_files_names = []
-    if not st.session_state.staged_files:
-        return processed_files_names
-
+    if not st.session_state.staged_files: return processed_files_names
     with st.status(f"Processing {len(st.session_state.staged_files)} file(s)...", expanded=False) as status:
-        # Iterate over a copy because we modify the original list via remove function potentially
         staged_copy = list(st.session_state.staged_files)
         for file in staged_copy:
             if file.name not in st.session_state.uploaded_file_data:
                 status.write(f"Processing {file.name}...")
                 content, metadata = file_parser.process_uploaded_file(file)
                 if content is not None:
-                    st.session_state.uploaded_file_data[file.name] = {
-                        "content": content, "metadata": metadata
-                    }
+                    st.session_state.uploaded_file_data[file.name] = {"content": content, "metadata": metadata}
                     processed_files_names.append(file.name)
-                else:
-                    status.write(f"⚠️ Failed to process {file.name}")
+                else: status.write(f"⚠️ Failed to process {file.name}")
         status.update(label=f"Processed {len(processed_files_names)} file(s)!", state="complete")
-
-    # Clear staging AFTER processing all
-    st.session_state.staged_files = []
-    st.session_state.show_dropzone = False # Hide dropzone after processing
-
-    if processed_files_names:
-        st.toast(f"Added {len(processed_files_names)} file(s) to context.")
-
+    st.session_state.staged_files = [] # Clear staging
+    if processed_files_names: st.toast(f"Added {len(processed_files_names)} file(s) to context.")
     return processed_files_names
 
-
-# --- Sidebar (Adapted from Claude's) ---
+# --- Sidebar ---
+# (Sidebar code remains largely the same as Claude's version)
 with st.sidebar:
     st.markdown('<h1 style="color: white; margin-bottom: 20px;">💬 AI Chat</h1>', unsafe_allow_html=True)
-    if st.button("➕ New Chat", use_container_width=True, key="new_chat_btn"):
-        create_new_chat()
+    if st.button("➕ New Chat", use_container_width=True, key="new_chat_btn"): create_new_chat()
     st.markdown('<div style="margin: 20px 0;"></div>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: white; margin-bottom: 10px;">Chat History</h3>', unsafe_allow_html=True)
-    # Sort chats by creation time (assuming IDs are timestamps)
     sorted_chat_ids = sorted(st.session_state.chat_history.keys(), reverse=True)
     for chat_id in sorted_chat_ids:
         chat_data = st.session_state.chat_history[chat_id]
         chat_title = chat_data.get("title", "Chat")
-        # Use columns for title and maybe a delete button later
-        col1, col2 = st.columns([0.85, 0.15])
-        with col1:
-            if st.button(f"{chat_title}", key=f"load_chat_{chat_id}", use_container_width=True, help=f"Load chat: {chat_title}"):
-                load_chat(chat_id)
-        # Add delete button functionality later if needed
-        # with col2:
-        #     if st.button("🗑️", key=f"delete_chat_{chat_id}", help="Delete chat"):
-        #         # Add delete logic here
-        #         pass
+        if st.button(f"{chat_title}", key=f"load_chat_{chat_id}", use_container_width=True): load_chat(chat_id)
 
     st.markdown('<div style="margin: 20px 0;"></div>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: white; margin-bottom: 10px;">Model Settings</h3>', unsafe_allow_html=True)
-    # (Model selection logic - same as Claude's, seems okay)
+    # Model Selection
     available_models = list(llm_api.SUPPORTED_MODELS.keys())
     if not available_models: st.error("No models configured."); st.stop()
     if st.session_state.selected_model not in available_models: st.session_state.selected_model = available_models[0]
@@ -445,7 +413,7 @@ with st.sidebar:
     model_capabilities = llm_api.get_model_capabilities(st.session_state.selected_model)
     st.markdown(f'<div style="color: #aaa; font-size: 12px; margin-top: 5px;">Capabilities: {", ".join(model_capabilities)}</div>', unsafe_allow_html=True)
 
-    # Display Processed Files (using helper for consistency)
+    # Display Processed Files
     if st.session_state.uploaded_file_data:
         st.markdown('<div style="margin: 20px 0;"></div>', unsafe_allow_html=True)
         st.markdown('<h3 style="color: white; margin-bottom: 10px;">Uploaded Files</h3>', unsafe_allow_html=True)
@@ -453,198 +421,181 @@ with st.sidebar:
         for filename in sorted_filenames:
             if filename in st.session_state.uploaded_file_data:
                  metadata = st.session_state.uploaded_file_data[filename]["metadata"]
-                 # Display minimal info in sidebar, full card was too much
                  file_type = metadata.get("type", "unknown")
                  st.markdown(f'<div style="color: #ccc; font-size: 0.9em; padding: 2px 0;">📎 {filename} ({file_type})</div>', unsafe_allow_html=True)
         if st.button("Clear All Files", use_container_width=True, key="clear_files_btn"):
             st.session_state.uploaded_file_data = {}; st.toast("Cleared all files from chat context."); st.rerun()
 
-
 # --- Main Chat Area ---
-# This container holds the messages. CSS adds padding at the bottom.
 chat_display_container = st.container()
 with chat_display_container:
     if not st.session_state.messages:
-        # show_welcome_screen() # Optional: Show welcome/examples
-        st.caption("Chat messages will appear here.")
+        # show_welcome_screen() # Optional welcome screen logic
+        pass # Just show empty space above input area
     else:
         for message in st.session_state.messages:
             display_chat_message(message) # Use custom HTML display
 
-# --- Thinking Indicator Logic ---
-# This needs to be placed *after* the main message display loop
+# --- LLM Response Trigger ---
+# This runs *after* the send button logic has set thinking = True and rerun
 if st.session_state.thinking:
-    # Append a temporary thinking message structure if needed or just show animation
-    # This part feels redundant if the LLM call happens below
-    # Let's assume the main loop handles the actual response append
-    # We just need to display the animation *while* thinking = True
-    # This might require placing the thinking check *before* the LLM call is triggered
-    # It's tricky with Streamlit's rerun. Let's try triggering LLM call on thinking state.
-    pass # Thinking animation is handled visually by CSS, logic below triggers call
+    # Display thinking animation within the message flow
+    with chat_display_container: # Ensure it appears in the chat flow
+         st.markdown(f"""
+         <div class="chat-message-container">
+             <div class="chat-message bot">
+                 <div class="avatar bot"><span>🤖</span></div>
+                 <div class="message-content"><div class="thinking-animation"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div></div>
+             </div>
+         </div>
+         """, unsafe_allow_html=True)
 
-# --- LLM Response Generation Triggered by Thinking State ---
-if st.session_state.thinking:
-    # Retrieve necessary context
-    history_for_llm = st.session_state.messages[-10:] # Get last messages for context
+    # Retrieve context
+    history_for_llm = st.session_state.messages[-10:]
     file_context_for_llm = st.session_state.uploaded_file_data
     current_model_capabilities = llm_api.get_model_capabilities(st.session_state.selected_model)
 
     try:
-        # Simulate delay (optional)
-        # time.sleep(random.uniform(1.0, 2.0))
-
-        # Actual LLM Call
+        # LLM Call
         response_text, generated_file_info = llm_api.get_llm_response(
-            model_display_name=st.session_state.selected_model,
-            messages=history_for_llm,
-            api_keys=st.session_state.api_keys,
-            uploaded_file_context=file_context_for_llm,
+            model_display_name=st.session_state.selected_model, messages=history_for_llm,
+            api_keys=st.session_state.api_keys, uploaded_file_context=file_context_for_llm,
             model_capabilities=current_model_capabilities
         )
-
-        # Create assistant message
-        assistant_message = {
-            "role": "assistant",
-            "content": response_text,
-            "generated_files": [] # Add logic for generated files if needed
-        }
-        # Append response
+        assistant_message = {"role": "assistant", "content": response_text, "generated_files": []}
         st.session_state.messages.append(assistant_message)
-        # Update persistent history
         st.session_state.chat_history[st.session_state.current_chat_id]["messages"] = st.session_state.messages
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
-        error_message = f"Sorry, I encountered an error trying to get a response. Error: {e}"
-        # Append error as assistant message
+        error_message = f"Sorry, I encountered an error. Error: {e}"
         st.session_state.messages.append({"role": "assistant", "content": error_message})
         st.session_state.chat_history[st.session_state.current_chat_id]["messages"] = st.session_state.messages
 
     finally:
-        # Always turn off thinking state and rerun
+        # Processing finished, turn off thinking and rerun to display result
         st.session_state.thinking = False
-        st.rerun() # Rerun to display the new assistant message
+        st.rerun()
 
 
-# --- Chat Input Area (using custom HTML/CSS) ---
+# --- Fixed Chat Input Area at Bottom ---
 st.markdown('<div class="chat-input-area-wrapper">', unsafe_allow_html=True)
 st.markdown('<div class="chat-input-area">', unsafe_allow_html=True)
 
-# --- Staging Area (Files to be uploaded with next message) ---
+# --- Staging Area ---
 if st.session_state.staged_files:
     st.markdown('<div class="staging-area">', unsafe_allow_html=True)
-    for i, file in enumerate(st.session_state.staged_files):
-        # Display file badge with a unique key for the hidden remove button
+    staged_file_copy = list(st.session_state.staged_files) # Iterate over copy
+    for i, file in enumerate(staged_file_copy):
+        # Use a unique ID for the hidden button based on index and file details
+        # This is still prone to issues if file list changes order between runs
+        hidden_btn_id = f"remove-btn-{i}-hidden"
         st.markdown(f"""
         <span class="file-badge">
             📎 {file.name}
             <button class="remove-btn" data-index="{i}" title="Remove {file.name}"
-                    onclick="document.getElementById('remove-btn-{i}').click()">×</button>
+                    onclick="document.getElementById('{hidden_btn_id}').click()">×</button>
         </span>
         """, unsafe_allow_html=True)
-        # Corresponding hidden Streamlit button to trigger the Python callback
-        st.button(f"RemoveFile{i}", key=f"remove_btn_{i}", on_click=remove_staged_file, args=(i,), help=f"Internal remove trigger for index {i}")
-        # ^^ NOTE: The 'visible=False' argument doesn't exist for st.button. Hiding relies on CSS/JS hacks or complex container tricks.
-        # This hidden button approach is very likely to cause issues or not work reliably.
+        # Hidden Streamlit button for the callback
+        st.button(f"X{i}", key=hidden_btn_id, on_click=remove_staged_file, args=(i,), help=f"Remove {file.name}")
     st.markdown('</div>', unsafe_allow_html=True)
-
 
 # --- Input Row ---
 st.markdown('<div class="chat-input-row">', unsafe_allow_html=True)
 
-# Attachment Button (triggers file uploader indirectly)
-# This button itself doesn't upload, it should ideally trigger the hidden st.file_uploader
-# Option 1: Use a visible st.button to toggle state? (Simpler)
-# Option 2: Use markdown button + JS to click hidden uploader (Complex/Fragile)
+# File Uploader - Rendered but hidden via CSS, triggered by button click
+# We need a way for the visible button click to trigger this hidden uploader
+# This requires JavaScript which is complex to manage reliably in Streamlit
+# Alternative: Use st.button to just show/hide the uploader below
 
-# Using st.button for simplicity to toggle dropzone/uploader visibility state
-if st.button("📎", key="toggle_upload_btn", help="Attach files"):
-    st.session_state.show_dropzone = not st.session_state.show_dropzone
-    # No rerun here, let the uploader appear/disappear below
+# Visible Button (acts as trigger)
+if st.button("📎", key="attach_btn", help="Attach files"):
+     # This button click should ideally trigger the hidden file_uploader below
+     # Using JS: (Difficult) Find file_uploader's input element and click it.
+     # Using State: (Simpler) Toggle a state variable to *show* the file uploader.
+     st.session_state.show_dropzone = not st.session_state.show_dropzone
+     # Rerun might be needed depending on how the uploader visibility is handled
+     st.rerun()
 
-# Text Area Input
+
+# Text Area
 prompt = st.text_area(
-    "Your message", # Needs aria-label for JS selector
-    key="chat_input_textarea", # Use a distinct key if needed
+    "Your message", # Aria-label used by JS
+    key="chat_input_textarea",
     placeholder=f"Message {st.session_state.selected_model}..." if not st.session_state.stop_app else "API Key Missing",
     disabled=st.session_state.stop_app or st.session_state.thinking,
     label_visibility="collapsed",
-    height=24, # Initial height, JS tries to auto-grow
-    # on_change=lambda: auto_grow_js() # Can't directly call JS easily
+    height=24,
 )
 
-# Submit Button (using custom HTML + hidden button trigger)
-# Check if prompt is empty or only whitespace
+# Submit Button (HTML + hidden trigger)
 is_send_disabled = st.session_state.stop_app or st.session_state.thinking or not prompt.strip()
 st.markdown(f"""
-    <button id="send-button-html" class="chat-submit-button"
-            title="Send message"
+    <button class="chat-submit-button" id="send-button-html" title="Send message"
             {'disabled' if is_send_disabled else ''}
-            onclick="document.getElementById('hidden-send-trigger').click()">
+            onclick="document.getElementById('hidden-send-trigger-button').click()">
         ➤
     </button>
     """, unsafe_allow_html=True)
 
-# Hidden button to actually trigger Streamlit logic when HTML button is clicked via JS
-# This button click will be simulated by the Enter key JS or the HTML button onclick JS
-if st.button("HiddenSendTrigger", key="hidden-send-trigger", disabled=is_send_disabled):
-    if prompt and not st.session_state.stop_app and not st.session_state.thinking:
-        # Process staged files *now*
-        processed_files_names = process_staged_files() # Adds files to context
-
-        # Append user message to state
-        user_message = {"role": "user", "content": prompt}
-        # Optionally link processed files to this specific message if needed
-        # if processed_files_names: user_message["processed_files"] = processed_files_names
-        st.session_state.messages.append(user_message)
-
-        # Update chat history log
-        st.session_state.chat_history[st.session_state.current_chat_id]["messages"] = st.session_state.messages
-
-        # Update title if first message
-        if len(st.session_state.messages) == 1:
-            update_chat_title()
-
-        # Set thinking flag to trigger LLM call on next rerun
-        st.session_state.thinking = True
-
-        # Clear the text area (Streamlit handles this on button click + rerun)
-        # Rerun to display user message and start thinking process
-        st.rerun()
-
+# Hidden button for Streamlit callback - needs a unique ID
+# This is triggered by the HTML button's onclick or the Enter key JS
+submit_button_clicked = st.button("SendTrigger", key="hidden-send-trigger-button", disabled=is_send_disabled)
 
 st.markdown('</div>', unsafe_allow_html=True) # Close chat-input-row
-st.markdown('</div>', unsafe_allow_html=True) # Close chat-input-area
 
-# --- Hidden File Uploader ---
-# This is triggered by the attach button/logic
-if st.session_state.show_dropzone: # Only render if toggled
-    st.markdown("---") # Separator above dropzone
-    st.caption("Attach files below:")
+# --- Conditionally Rendered File Uploader ---
+# This appears *below* the input row when toggled by the '📎' button
+if st.session_state.show_dropzone:
+    st.caption("Attach files:") # Add a label
     uploaded_files = st.file_uploader(
-        "Drag and drop or browse",
+        "Drag and drop or browse files",
         type=["pdf", "docx", "txt", "jpg", "jpeg", "png", "csv", "xlsx", "ipynb", "zip"],
         accept_multiple_files=True,
-        key="hidden_file_uploader", # Unique key
-        label_visibility="collapsed"
+        key="actual_file_uploader", # Unique key
+        label_visibility="collapsed" # Hide label, rely on st.caption
     )
     if uploaded_files:
         newly_staged_count = 0
         for file in uploaded_files:
-             # Check if file with same name is already staged
-             is_already_staged = any(staged_file.name == file.name for staged_file in st.session_state.staged_files)
-             if not is_already_staged:
+            is_already_staged = any(staged_file.name == file.name for staged_file in st.session_state.staged_files)
+            if not is_already_staged:
                 st.session_state.staged_files.append(file)
                 newly_staged_count += 1
         if newly_staged_count > 0:
             st.toast(f"Staged {newly_staged_count} file(s).")
-            # Maybe hide dropzone after successful upload?
-            # st.session_state.show_dropzone = False
-            st.rerun() # Rerun to show staged files and clear uploader state
-    st.markdown("---") # Separator below dropzone
+            st.session_state.show_dropzone = False # Optionally hide after upload
+            st.rerun()
 
+
+st.markdown('</div>', unsafe_allow_html=True) # Close chat-input-area
 st.markdown('</div>', unsafe_allow_html=True) # Close chat-input-area-wrapper
 
-# --- Final check/warning if app is stopped ---
+
+# --- Send Logic (Triggered by hidden button) ---
+if submit_button_clicked: # Check if the hidden button was clicked
+    if prompt and not st.session_state.stop_app and not st.session_state.thinking:
+        # 1. Process staged files
+        processed_files_names = process_staged_files() # Returns list of names processed
+
+        # 2. Append user message to state
+        user_message = {"role": "user", "content": prompt}
+        st.session_state.messages.append(user_message)
+
+        # 3. Update chat history log
+        st.session_state.chat_history[st.session_state.current_chat_id]["messages"] = st.session_state.messages
+
+        # 4. Update title if first message
+        if len(st.session_state.messages) == 1:
+            update_chat_title()
+
+        # 5. Set thinking flag - LLM call happens on *next* rerun
+        st.session_state.thinking = True
+
+        # 6. Rerun to show user message, clear input, and trigger thinking logic
+        st.rerun()
+
+# --- Final check/warning ---
 if st.session_state.stop_app:
     st.warning(f"Chat input disabled. API key ('{required_key_name_for_selected}') missing.", icon="⚠️")
