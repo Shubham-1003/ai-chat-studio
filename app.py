@@ -4,130 +4,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT/Claude Replica</title>
+    <title>AI Chat Studio</title>
     <style>
+        /* Global Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f6;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 720px;
+            max-width: 52rem;
             margin: 0 auto;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
         }
-        .chat-header {
-            background-color: #0073b1;
+        header {
+            visibility: hidden;
+        }
+        .sidebar {
+            background-color: #202123;
             color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2em;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            padding: 1rem;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
         }
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            max-width: 80%;
-            line-height: 1.4;
-        }
-        .message.user {
-            background-color: #e1f1ff;
-            align-self: flex-end;
-        }
-        .message.bot {
-            background-color: #f1f1f1;
-            align-self: flex-start;
-        }
-        .message.typing {
-            background-color: #f1f1f1;
-            align-self: flex-start;
-            display: flex;
-            align-items: center;
-        }
-        .typing-indicator {
-            display: flex;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: #555;
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
+        .main-content {
+            margin-left: 250px;
+            padding: 1rem;
         }
         .chat-input-area {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            padding: 0.8rem 1rem;
+            background-color: white;
+            z-index: 999;
+            border-top: 1px solid #e5e5e5;
+            max-width: calc(52rem - 250px);
+        }
+        .file-dropzone {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        .file-badge .remove-btn {
+            margin-left: 5px;
+            cursor: pointer;
+            color: #888;
+        }
+        .file-badge .remove-btn:hover {
+            color: #ff4d4f;
+        }
+        .upload-icon {
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
             display: flex;
-            border-top: 1px solid #ddd;
-            padding: 10px;
-            background-color: #fafafa;
-        }
-        .chat-input-area input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            outline: none;
-            font-size: 1em;
-        }
-        .chat-input-area button {
-            padding: 10px 20px;
-            margin-left: 10px;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
             border: none;
-            background-color: #0073b1;
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1em;
         }
-        .chat-input-area button:hover {
-            background-color: #005f91;
+        .upload-icon:hover {
+            background-color: #e6e6e6;
         }
-        .attachment-icon {
-            margin-right: 10px;
-            cursor: pointer;
-            color: #0073b1;
-            font-size: 1.2em;
+        .chat-input-container {
+            display: flex;
+            align-items: flex-end;
         }
-        .attachment-icon:hover {
-            color: #005f91;
+        .chat-input-box {
+            flex-grow: 1;
+            margin-right: 8px;
+        }
+        .chat-message {
+            background-color: #f7f7f8;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .chat-message.user {
+            background-color: #ececf1;
+            align-self: flex-end;
+        }
+        .chat-message.bot {
+            background-color: #f7f7f8;
+            align-self: flex-start;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">AI Chat Interface</div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be dynamically inserted here -->
+    <div class="sidebar">
+        <h1>✨ AI Chat Studio</h1>
+        <button onclick="newChat()">➕ New Chat</button>
+        <hr>
+        <h3>🤖 Model Selection</h3>
+        <select id="modelSelector">
+            <option value="Model1">Model 1</option>
+            <option value="Model2">Model 2</option>
+        </select>
+        <p id="modelCapabilities">Capabilities: Capability1, Capability2</p>
+        <hr>
+        <h3>Chat Context Files</h3>
+        <div id="uploadedFiles"></div>
+        <button onclick="clearAllFiles()">Clear All Context Files</button>
+    </div>
+    <div class="main-content" id="chatArea">
+        <div style="height: 80px;"></div>
+        <div id="chatMessages"></div>
+    </div>
+    <div class="chat-input-area">
+        <div class="file-dropzone" id="fileDropzone" style="display:none;">
+            <input type="file" id="fileUploader" multiple style="display:none;" onchange="handleFileUpload()">
+            <label for="fileUploader">Drag and drop files here</label>
         </div>
-        <div class="chat-input-area">
-            <span class="attachment-icon" onclick="toggleFileUpload()">📎</span>
-            <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">Send</button>
+        <div id="stagedFiles"></div>
+        <div class="chat-input-container">
+            <button class="upload-icon" onclick="toggleDropzone()">📎</button>
+            <input type="text" id="chatInput" placeholder="Ask Model anything..." onkeypress="handleKeyPress(event)">
         </div>
     </div>
 
@@ -135,18 +145,57 @@
         let messages = [];
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
+        const fileDropzone = document.getElementById('fileDropzone');
+        const stagedFilesDiv = document.getElementById('stagedFiles');
+        let stagedFiles = [];
+
+        function newChat() {
+            messages = [];
+            chatMessages.innerHTML = '';
+        }
+
+        function toggleDropzone() {
+            fileDropzone.style.display = fileDropzone.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleFileUpload() {
+            const files = document.getElementById('fileUploader').files;
+            for (let i = 0; i < files.length; i++) {
+                if (!stagedFiles.some(file => file.name === files[i].name)) {
+                    stagedFiles.push(files[i]);
+                }
+            }
+            updateStagedFiles();
+        }
+
+        function updateStagedFiles() {
+            stagedFilesDiv.innerHTML = '';
+            stagedFiles.forEach((file, index) => {
+                const fileBadge = document.createElement('span');
+                fileBadge.className = 'file-badge';
+                fileBadge.textContent = file.name;
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => removeStagedFile(index);
+                fileBadge.appendChild(removeBtn);
+                stagedFilesDiv.appendChild(fileBadge);
+            });
+        }
+
+        function removeStagedFile(index) {
+            stagedFiles.splice(index, 1);
+            updateStagedFiles();
+        }
 
         function sendMessage() {
             const messageText = chatInput.value.trim();
             if (messageText === '') return;
 
-            // Add user message to the UI
             addMessageToUI('user', messageText);
 
-            // Simulate bot response with typing animation
             setTimeout(() => simulateBotResponse(messageText), 500);
 
-            // Clear input field
             chatInput.value = '';
         }
 
@@ -158,28 +207,19 @@
 
         function addMessageToUI(role, content) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
+            messageDiv.className = `chat-message ${role}`;
             messageDiv.textContent = content;
             chatMessages.appendChild(messageDiv);
             scrollToBottom();
         }
 
         function simulateBotResponse(userMessage) {
-            // Show typing indicator
             const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot typing';
-            const typingIndicator = document.createElement('div');
-            typingIndicator.className = 'typing-indicator';
-            for (let i = 0; i < 3; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                typingIndicator.appendChild(dot);
-            }
-            typingDiv.appendChild(typingIndicator);
+            typingDiv.className = 'chat-message bot';
+            typingDiv.textContent = '🧠 Thinking...';
             chatMessages.appendChild(typingDiv);
             scrollToBottom();
 
-            // Simulate a delay and then show bot's response
             setTimeout(() => {
                 chatMessages.removeChild(typingDiv);
                 const botResponse = getBotResponse(userMessage);
@@ -188,7 +228,6 @@
         }
 
         function getBotResponse(userMessage) {
-            // Simple mock response logic
             const responses = [
                 "That's an interesting point!",
                 "I see what you mean.",
@@ -199,12 +238,13 @@
             return responses[Math.floor(Math.random() * responses.length)];
         }
 
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        function clearAllFiles() {
+            stagedFiles = [];
+            updateStagedFiles();
         }
 
-        function toggleFileUpload() {
-            alert("File upload functionality is not implemented in this demo.");
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     </script>
 </body>
