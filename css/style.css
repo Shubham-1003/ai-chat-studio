@@ -1,39 +1,52 @@
-/* css/style.css - Neobrutalist Theme */
+/* css/style.css - Modern Polished Theme */
 
-/* --- Global Settings & Neobrutalist Variables --- */
+/* --- Global Settings & Modern Variables --- */
 :root {
-    --bg-primary: #FFFFFF;        /* White Background */
-    --bg-secondary: #F0F0F0;     /* Light Grey for subtle contrast */
-    --accent-primary: #00FF00;   /* LIME GREEN Accent */
-    --accent-secondary: #00CC00; /* Darker Lime for hover/borders */
-    --text-color: #000000;       /* Black Text */
-    --border-color: #000000;      /* Black Borders */
+    /* Modern Color Palette */
+    --bg-primary: #f8f9fa;        /* Light background */
+    --bg-secondary: #ffffff;      /* White surface */
+    --accent-primary: #6366f1;    /* Indigo as primary accent */
+    --accent-secondary: #4f46e5;  /* Darker indigo for hover */
+    --text-primary: #1e293b;      /* Slate-800 for main text */
+    --text-secondary: #64748b;    /* Slate-500 for secondary text */
+    --border-color: #e2e8f0;      /* Slate-200 for subtle borders */
+    --success-color: #10b981;     /* Emerald-500 for success */
+    --warning-color: #f59e0b;     /* Amber-500 for warnings */
+    --error-color: #ef4444;       /* Red-500 for errors */
 
     /* Chat Bubbles */
-    --user-message-bg: var(--bg-primary);
-    --assistant-message-bg: var(--bg-primary);
+    --user-message-bg: #eff6ff;   /* Blue-50 for user messages */
+    --assistant-message-bg: #f8fafc; /* Slate-50 for assistant */
+    --user-message-border: #bfdbfe; /* Blue-200 */
+    --assistant-message-border: #e2e8f0; /* Slate-200 */
 
-    --font-family: 'Arial', 'Helvetica', sans-serif; /* Simple, standard font */
-    --border-width: 2px;
-    --hard-shadow-offset: 5px; /* Offset for the hard shadow */
-    --hard-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--border-color); /* X Y Blur Spread Color */
-    --border-radius: 0px; /* NO border radius */
-
-    --transition-speed: 0.15s; /* Faster transitions */
+    /* Typography */
+    --font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    
+    /* Effects */
+    --border-radius: 12px;          /* Rounded corners */
+    --border-radius-sm: 8px;        /* Smaller rounded corners */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Animations */
+    --transition-speed: 0.2s;
+    --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Apply base styles */
 body {
     font-family: var(--font-family);
-    background-color: var(--bg-secondary); /* Light grey main background */
-    color: var(--text-color);
-    line-height: 1.5;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
     margin: 0;
+    transition: background-color var(--transition-speed) var(--transition-timing);
 }
 
 *, *::before, *::after {
     box-sizing: border-box;
-    border-radius: var(--border-radius) !important; /* FORCE sharp edges globally */
 }
 
 /* --- Hide Streamlit Default Branding --- */
@@ -47,39 +60,45 @@ div[data-testid="stDecoration"],
 .main .block-container {
     padding: 2rem;
     padding-bottom: 8rem; /* Space for input */
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-/* --- Sidebar Styling (Stark Panel) --- */
+/* --- Sidebar Styling (Modern Panel) --- */
 [data-testid="stSidebar"] {
-    background-color: var(--bg-primary); /* White sidebar */
-    border-right: var(--border-width) solid var(--border-color);
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
     padding: 1.5rem;
-    box-shadow: var(--hard-shadow); /* Apply hard shadow */
+    box-shadow: var(--shadow-md);
 }
 
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
-    color: var(--text-color);
-    font-weight: bold;
-    margin-bottom: 1rem;
-    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.025em;
 }
+
 /* Sidebar Title Specific */
 [data-testid="stSidebar"] h1 {
-     border-bottom: var(--border-width) solid var(--border-color);
-     padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
 }
 
 /* Sidebar Button Styling */
 [data-testid="stSidebar"] .stButton>button {
     background: var(--accent-primary);
-    color: var(--text-color);
-    font-weight: bold;
-    border: var(--border-width) solid var(--border-color);
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--border-radius);
     padding: 0.7rem 1.4rem;
-    transition: all var(--transition-speed) ease;
-    box-shadow: var(--hard-shadow);
+    transition: all var(--transition-speed) var(--transition-timing);
+    box-shadow: var(--shadow-sm);
     width: 100%;
     margin-bottom: 1rem;
     text-align: center;
@@ -87,94 +106,109 @@ div[data-testid="stDecoration"],
 
 [data-testid="stSidebar"] .stButton>button:hover {
     background: var(--accent-secondary);
-    box-shadow: none; /* Remove shadow on hover */
-    transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset)); /* Move button into shadow space */
-}
-[data-testid="stSidebar"] .stButton>button:active {
-     background: var(--accent-secondary);
-     box-shadow: none;
-     transform: translate(calc(var(--hard-shadow-offset) - 2px), calc(var(--hard-shadow-offset) - 2px)); /* Slight press effect */
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
+[data-testid="stSidebar"] .stButton>button:active {
+    background: var(--accent-secondary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(0);
+}
 
 /* Sidebar Inputs & Selectors */
 [data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div,
 [data-testid="stSidebar"] .stTextInput input {
-    background-color: var(--bg-primary);
-    color: var(--text-color);
-    border: var(--border-width) solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
     padding: 0.7rem 1rem;
-    transition: none; /* No transition */
-    box-shadow: none;
+    transition: all var(--transition-speed) var(--transition-timing);
+    box-shadow: var(--shadow-sm);
 }
+
 [data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div:focus-within,
 [data-testid="stSidebar"] .stTextInput input:focus {
-    border-color: var(--accent-primary); /* Accent border on focus */
-    box-shadow: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
     outline: none;
 }
+
 /* Placeholder text color */
 [data-testid="stSidebar"] .stTextInput input::placeholder {
-    color: #888; /* Grey placeholder */
+    color: var(--text-secondary);
     opacity: 1;
 }
 
 /* Sidebar File Uploader */
 [data-testid="stFileUploader"] {
-    border: var(--border-width) dashed var(--border-color);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--border-radius);
     padding: 1.5rem;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-primary);
     text-align: center;
-    transition: none;
+    transition: all var(--transition-speed) var(--transition-timing);
 }
+
 [data-testid="stFileUploader"]:hover {
     border-color: var(--accent-primary);
-    background-color: #E0E0E0;
+    background-color: rgba(99, 102, 241, 0.05);
 }
+
 [data-testid="stFileUploader"] label {
-    font-weight: normal;
-    color: var(--text-color);
+    font-weight: 500;
+    color: var(--text-primary);
 }
+
 [data-testid="stFileUploader"] svg {
-    color: var(--text-color);
+    color: var(--accent-primary);
 }
 
 /* Sidebar Expanders (File Cards) */
 [data-testid="stSidebar"] [data-testid="stExpander"] {
-    border: var(--border-width) solid var(--border-color);
-    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-secondary);
     margin-bottom: 1rem;
-    box-shadow: var(--hard-shadow);
-    transition: none;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--transition-timing);
+    overflow: hidden;
 }
+
 [data-testid="stSidebar"] [data-testid="stExpander"]:hover {
-     border-color: var(--accent-primary);
-     box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-primary); /* Accent shadow on hover */
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-md);
 }
+
 [data-testid="stSidebar"] [data-testid="stExpander"] summary {
-    font-weight: bold;
-    color: var(--text-color);
+    font-weight: 500;
+    color: var(--text-primary);
     padding: 0.8rem 1rem;
+    cursor: pointer;
 }
+
 [data-testid="stSidebar"] [data-testid="stExpander"] .stCodeBlock,
 [data-testid="stSidebar"] [data-testid="stExpander"] pre {
-    background-color: var(--bg-secondary) !important;
-    border: var(--border-width) solid var(--border-color) !important;
+    background-color: var(--bg-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-sm);
     padding: 0.75rem 1rem;
     margin-top: 0.5rem;
-    color: var(--text-color) !important;
-    box-shadow: none;
+    color: var(--text-primary) !important;
+    font-size: 0.875rem;
 }
 
 /* --- Main Chat Area Styling --- */
 /* Main Area Header */
 .main .block-container > div:first-child h1,
 .main .block-container > div:first-child h3 {
-     color: var(--text-color);
-     text-align: left; /* Align left */
-     margin-bottom: 2rem;
-     font-weight: bold;
-     font-size: 1.8rem; /* Larger header */
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 1.875rem;
+    letter-spacing: -0.025em;
 }
 
 /* Chat Input Container - Sticky */
@@ -183,126 +217,201 @@ div[data-testid="stDecoration"],
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--bg-secondary); /* Solid background */
-    padding: 1rem 2rem 1.5rem 2rem;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0) 0%, rgba(248, 249, 250, 1) 20%);
+    padding: 2rem;
     z-index: 10;
     width: 100%;
-    border-top: var(--border-width) solid var(--border-color);
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 /* Chat Input Box */
 [data-testid="stChatInput"] {
-    background-color: var(--bg-primary);
-    border: var(--border-width) solid var(--border-color);
-    padding: 0.5rem 1rem; /* Adjust padding */
-    box-shadow: var(--hard-shadow);
-    transition: none;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-speed) var(--transition-timing);
     position: relative;
 }
+
 [data-testid="stChatInput"] > div {
     background-color: transparent;
 }
+
 [data-testid="stChatInput"]:focus-within {
     border-color: var(--accent-primary);
-    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-primary); /* Accent shadow on focus */
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2), var(--shadow-md);
 }
+
 /* Input text */
 [data-testid="stChatInput"] textarea {
-    color: var(--text-color);
+    color: var(--text-primary);
     font-size: 1rem;
-    line-height: 1.4; /* Adjust line height for input */
+    line-height: 1.5;
+    padding: 0.5rem 0;
 }
+
 [data-testid="stChatInput"] textarea::placeholder {
-    color: #888;
+    color: var(--text-secondary);
     opacity: 1;
 }
+
 /* Send button styling */
 [data-testid="stChatInput"] button[kind="icon"] {
-     background: var(--bg-primary);
-     border: var(--border-width) solid var(--border-color);
-     fill: var(--text-color);
-     box-shadow: var(--hard-shadow);
-     transition: all var(--transition-speed) ease;
-     margin-left: 0.5rem; /* Space between text and button */
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 50%;
+    fill: white;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--transition-timing);
+    margin-left: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 [data-testid="stChatInput"] button[kind="icon"]:hover {
-     background: var(--accent-primary);
-     box-shadow: none;
-     transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset));
+    background: var(--accent-secondary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
+[data-testid="stChatInput"] button[kind="icon"]:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
 
-/* --- CHAT MESSAGE LAYOUT (User Left, AI Right) --- */
+/* --- CHAT MESSAGE LAYOUT --- */
 
 /* Chat Messages General Style */
 [data-testid="stChatMessage"] {
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.5rem; /* More space between messages */
-    max-width: 75%;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    max-width: 80%;
     word-wrap: break-word;
     position: relative;
-    background-color: var(--bg-primary);
-    border: var(--border-width) solid var(--border-color);
-    box-shadow: var(--hard-shadow);
-    transition: none; /* No animations */
-    opacity: 1 !important; /* Ensure visibility */
-    transform: none !important; /* Ensure no transform */
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) var(--transition-timing);
 }
 
-
-/* USER MESSAGES (LEFT ALIGNED) */
+/* USER MESSAGES (RIGHT ALIGNED) */
 [data-testid="stChatMessage"][data-testid*="user"] {
-    margin-right: auto;
-    margin-left: 0;
-    /* No unique background needed, relies on border/shadow */
-}
-
-/* AI ASSISTANT MESSAGES (RIGHT ALIGNED) */
-[data-testid="stChatMessage"]:not([data-testid*="user"]) {
     margin-left: auto;
-    margin-right: 0;
-    border-color: var(--accent-secondary); /* Use accent color for AI border */
-    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-secondary); /* Accent shadow */
+    margin-right: 1rem;
+    background-color: var(--user-message-bg);
+    border: 1px solid var(--user-message-border);
+    border-bottom-right-radius: 4px;
 }
 
+/* USER MESSAGE ARROW */
+[data-testid="stChatMessage"][data-testid*="user"]::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    bottom: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid var(--user-message-bg);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+/* AI ASSISTANT MESSAGES (LEFT ALIGNED) */
+[data-testid="stChatMessage"]:not([data-testid*="user"]) {
+    margin-right: auto;
+    margin-left: 1rem;
+    background-color: var(--assistant-message-bg);
+    border: 1px solid var(--assistant-message-border);
+    border-bottom-left-radius: 4px;
+}
+
+/* AI MESSAGE ARROW */
+[data-testid="stChatMessage"]:not([data-testid*="user"])::after {
+    content: "";
+    position: absolute;
+    left: -10px;
+    bottom: 15px;
+    width: 0;
+    height: 0;
+    border-right: 10px solid var(--assistant-message-bg);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+/* Message Hover Effect */
+[data-testid="stChatMessage"]:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
 
 /* Hide default Streamlit avatar icons */
 [data-testid="stChatMessage"] [data-testid^="chatAvatarIcon-"] {
     display: none;
 }
+
 [data-testid="stChatMessage"] > div:first-child {
-     margin-left: 0 !important;
-     margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
+/* Styling for user identity label */
+[data-testid="stChatMessage"]::before {
+    content: attr(data-testid);
+    position: absolute;
+    top: -1.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+[data-testid="stChatMessage"][data-testid*="user"]::before {
+    right: 0;
+    content: "You";
+}
+
+[data-testid="stChatMessage"]:not([data-testid*="user"])::before {
+    left: 0;
+    content: "Assistant";
+}
 
 /* Styling for text content within messages */
 [data-testid="stChatMessage"] p {
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
+
 [data-testid="stChatMessage"] strong {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 /* Styling for Code Blocks */
 [data-testid="stChatMessage"] code { /* Inline code */
-    background-color: var(--bg-secondary);
-    padding: 0.1em 0.3em;
-    font-size: 0.9em;
-    border: 1px solid var(--border-color); /* Border inline code */
-    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2em 0.4em;
+    font-size: 0.875em;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    color: var(--accent-secondary);
 }
+
 [data-testid="stChatMessage"] pre { /* Code block */
-    background-color: var(--text-color) !important; /* Black background */
-    color: var(--accent-primary) !important; /* Lime Green text */
+    background-color: #1e293b !important; /* Dark background */
+    color: #e2e8f0 !important; /* Light text */
     padding: 1rem 1.2rem;
     overflow-x: auto;
     margin: 0.75rem 0;
-    border: var(--border-width) solid var(--accent-primary); /* Accent border */
-    font-family: 'Courier New', Courier, monospace; /* Monospace font */
-    box-shadow: none;
+    border-radius: var(--border-radius-sm);
+    font-family: 'Fira Code', 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    box-shadow: var(--shadow-sm);
+    border: none !important;
 }
+
 [data-testid="stChatMessage"] pre code {
     background-color: transparent !important;
     padding: 0;
@@ -313,61 +422,126 @@ div[data-testid="stDecoration"],
 
 /* Download Button inside Chat Messages */
 [data-testid="stChatMessage"] .stDownloadButton>button {
-    background-color: var(--bg-primary);
-    color: var(--text-color);
-    border: var(--border-width) solid var(--border-color);
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
     padding: 0.5rem 1rem;
-    font-size: 0.9em;
-    margin-top: 0.75rem;
-    transition: all var(--transition-speed) ease;
-    box-shadow: var(--hard-shadow);
-    font-weight: bold;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    transition: all var(--transition-speed) var(--transition-timing);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
 }
 
 [data-testid="stChatMessage"] .stDownloadButton>button:hover {
-    background-color: var(--accent-primary);
-    box-shadow: none;
-    transform: translate(var(--hard-shadow-offset), var(--hard-shadow-offset));
+    background-color: var(--accent-secondary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
+[data-testid="stChatMessage"] .stDownloadButton>button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
 
 /* --- Utility & Misc --- */
 hr {
     border: none;
-    border-top: var(--border-width) solid var(--border-color);
+    border-top: 1px solid var(--border-color);
     margin: 2rem 0;
 }
 
 /* Improve default Streamlit Info/Warning/Error boxes */
 [data-testid="stAlert"] {
-    border: var(--border-width) solid var(--border-color);
-    padding: 1rem 1.2rem;
-    background-color: var(--bg-primary);
-    color: var(--text-color);
-    box-shadow: var(--hard-shadow);
-    margin-bottom: 1rem;
+    border: 1px solid;
+    border-radius: var(--border-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
 }
-[data-testid="stAlert"] p { margin: 0; }
+
+[data-testid="stAlert"] p { 
+    margin: 0; 
+    line-height: 1.6;
+}
 
 /* Specific alert types */
 [data-testid="stAlert"][data-baseweb="alert"][role="alert"] { /* Info */
-    border-color: var(--accent-secondary); /* Use accent */
-    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px var(--accent-secondary);
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: #60a5fa; /* Blue-400 */
+    color: #1e40af; /* Blue-800 */
 }
+
 [data-testid="stAlert"][data-baseweb="alert"][role="status"] { /* Success */
-     border-color: #00A300; /* Darker Green */
-     box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #00A300;
-     background-color: #DFF2BF; /* Light green bg */
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: var(--success-color);
+    color: #065f46; /* Emerald-800 */
 }
+
 [data-testid="stAlert"][data-baseweb="alert"][role="alertdialog"] { /* Error */
-    border-color: #D8000C; /* Strong Red */
-    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #D8000C;
-    background-color: #FFBABA; /* Light red bg */
-    color: #D8000C; /* Red text */
-    font-weight: bold;
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: var(--error-color);
+    color: #b91c1c; /* Red-700 */
 }
+
 [data-testid="stAlert"][data-baseweb="alert"][role="log"] { /* Warning */
-    border-color: #FFCC00; /* Yellow/Orange */
-    box-shadow: var(--hard-shadow-offset) var(--hard-shadow-offset) 0px 0px #FFCC00;
-    background-color: #FFFFAA; /* Light yellow bg */
+    background-color: rgba(245, 158, 11, 0.1);
+    border-color: var(--warning-color);
+    color: #92400e; /* Amber-800 */
+}
+
+/* Typography Improvements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+h1 { font-size: 2rem; font-weight: 700; }
+h2 { font-size: 1.75rem; font-weight: 700; }
+h3 { font-size: 1.5rem; font-weight: 600; }
+h4 { font-size: 1.25rem; font-weight: 600; }
+h5 { font-size: 1.125rem; font-weight: 600; }
+h6 { font-size: 1rem; font-weight: 600; }
+
+/* Links styling */
+a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color var(--transition-speed) var(--transition-timing);
+}
+
+a:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+}
+
+/* Add scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* Slate-300 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Slate-400 */
+}
+
+/* Animations for chat messages */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+[data-testid="stChatMessage"] {
+    animation: fadeIn 0.3s ease forwards;
 }
