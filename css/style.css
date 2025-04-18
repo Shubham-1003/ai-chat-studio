@@ -1,547 +1,569 @@
-/* css/style.css - Modern Polished Theme */
+/* Modern Dark Glassmorphism Chat UI
+   A completely redesigned chat interface with dark mode, 
+   glassmorphism effects, and smooth animations */
 
-/* --- Global Settings & Modern Variables --- */
+/* Import Google Fonts - Outfit for headings, Inter for body text */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+/* --- Core Variables --- */
 :root {
-    /* Modern Color Palette */
-    --bg-primary: #f8f9fa;        /* Light background */
-    --bg-secondary: #ffffff;      /* White surface */
-    --accent-primary: #6366f1;    /* Indigo as primary accent */
-    --accent-secondary: #4f46e5;  /* Darker indigo for hover */
-    --text-primary: #1e293b;      /* Slate-800 for main text */
-    --text-secondary: #64748b;    /* Slate-500 for secondary text */
-    --border-color: #e2e8f0;      /* Slate-200 for subtle borders */
-    --success-color: #10b981;     /* Emerald-500 for success */
-    --warning-color: #f59e0b;     /* Amber-500 for warnings */
-    --error-color: #ef4444;       /* Red-500 for errors */
-
-    /* Chat Bubbles */
-    --user-message-bg: #eff6ff;   /* Blue-50 for user messages */
-    --assistant-message-bg: #f8fafc; /* Slate-50 for assistant */
-    --user-message-border: #bfdbfe; /* Blue-200 */
-    --assistant-message-border: #e2e8f0; /* Slate-200 */
-
-    /* Typography */
-    --font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    
-    /* Effects */
-    --border-radius: 12px;          /* Rounded corners */
-    --border-radius-sm: 8px;        /* Smaller rounded corners */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    
-    /* Animations */
-    --transition-speed: 0.2s;
-    --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Dark Mode Color Scheme */
+  --bg-gradient-1: #0f172a;          /* Slate 900 */
+  --bg-gradient-2: #1e1b4b;          /* Indigo 950 */
+  --surface-primary: rgba(30, 41, 59, 0.7);   /* Slate 800 with transparency */
+  --surface-secondary: rgba(15, 23, 42, 0.85); /* Slate 900 with transparency */
+  --accent-primary: #8b5cf6;         /* Violet 500 */
+  --accent-gradient-1: #8b5cf6;      /* Violet 500 */
+  --accent-gradient-2: #6366f1;      /* Indigo 500 */
+  --accent-hover: #a78bfa;           /* Violet 400 */
+  --text-primary: #f8fafc;           /* Slate 50 */
+  --text-secondary: #cbd5e1;         /* Slate 300 */
+  --text-tertiary: #94a3b8;          /* Slate 400 */
+  --border-color: rgba(148, 163, 184, 0.2); /* Slate 400 with transparency */
+  --user-message-bg: rgba(139, 92, 246, 0.15); /* Violet with transparency */
+  --ai-message-bg: rgba(30, 41, 59, 0.5);   /* Slate 800 with transparency */
+  --success-color: #4ade80;          /* Green 400 */
+  --error-color: #f87171;            /* Red 400 */
+  --warning-color: #fbbf24;          /* Amber 400 */
+  
+  /* Typography */
+  --font-headings: 'Outfit', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Effects */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+  --blur-effect: blur(12px);
+  --border-width: 1px;
+  --glow-effect: 0 0 20px rgba(139, 92, 246, 0.3);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  
+  /* Animations */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Apply base styles */
-body {
-    font-family: var(--font-family);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    margin: 0;
-    transition: background-color var(--transition-speed) var(--transition-timing);
-}
-
+/* --- Reset & Base Styles --- */
 *, *::before, *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* --- Hide Streamlit Default Branding --- */
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Hide default Streamlit elements */
 div[data-testid="stToolbar"],
 div[data-testid="stDecoration"],
-#MainMenu {
-    display: none !important;
+#MainMenu,
+footer {
+  display: none !important;
 }
 
-/* Adjust main container padding */
 .main .block-container {
-    padding: 2rem;
-    padding-bottom: 8rem; /* Space for input */
-    max-width: 1100px;
-    margin: 0 auto;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* --- Sidebar Styling (Modern Panel) --- */
+/* --- App Layout --- */
+
+/* App container with gradient background and margin for fixed chat input */
+.chat-app-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+/* App header with logo and title */
+.app-header {
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-bottom: 1rem;
+}
+
+.app-header h1 {
+  font-family: var(--font-headings);
+  font-weight: 600;
+  font-size: 2rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.app-header h1 span {
+  background: linear-gradient(90deg, var(--accent-gradient-1), var(--accent-gradient-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- Sidebar Styling --- */
 [data-testid="stSidebar"] {
-    background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
+  background: var(--surface-secondary);
+  backdrop-filter: var(--blur-effect);
+  -webkit-backdrop-filter: var(--blur-effect);
+  border-right: var(--border-width) solid var(--border-color);
+  padding: 2rem 1.5rem;
 }
 
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-bottom: 1.25rem;
-    letter-spacing: -0.025em;
+[data-testid="stSidebar"] > div:first-child {
+  padding: 0;
 }
 
-/* Sidebar Title Specific */
-[data-testid="stSidebar"] h1 {
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.75rem;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
+[data-testid="stSidebar"] h2 {
+  font-family: var(--font-headings);
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-/* Sidebar Button Styling */
-[data-testid="stSidebar"] .stButton>button {
-    background: var(--accent-primary);
-    color: white;
-    font-weight: 500;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.7rem 1.4rem;
-    transition: all var(--transition-speed) var(--transition-timing);
-    box-shadow: var(--shadow-sm);
-    width: 100%;
-    margin-bottom: 1rem;
-    text-align: center;
+/* Sidebar sections */
+[data-testid="stSidebar"] .sidebar-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: var(--border-width) solid var(--border-color);
 }
 
-[data-testid="stSidebar"] .stButton>button:hover {
-    background: var(--accent-secondary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+/* Sidebar buttons */
+[data-testid="stSidebar"] .stButton > button {
+  background: linear-gradient(90deg, var(--accent-gradient-1), var(--accent-gradient-2));
+  color: white;
+  font-family: var(--font-body);
+  font-weight: 500;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: var(--border-radius-md);
+  width: 100%;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 0.75rem;
 }
 
-[data-testid="stSidebar"] .stButton>button:active {
-    background: var(--accent-secondary);
-    box-shadow: var(--shadow-sm);
-    transform: translateY(0);
+[data-testid="stSidebar"] .stButton > button:hover {
+  box-shadow: var(--shadow-md), var(--glow-effect);
+  transform: translateY(-2px);
 }
 
-/* Sidebar Inputs & Selectors */
-[data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stButton > button:active {
+  transform: translateY(0);
+}
+
+/* Sidebar inputs */
+[data-testid="stSidebar"] .stTextInput > div[data-baseweb="input"] {
+  background: var(--surface-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
 [data-testid="stSidebar"] .stTextInput input {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    padding: 0.7rem 1rem;
-    transition: all var(--transition-speed) var(--transition-timing);
-    box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  padding: 0.75rem 1rem;
+  background: transparent;
 }
 
-[data-testid="stSidebar"] .stSelectbox > div[data-baseweb="select"] > div:focus-within,
 [data-testid="stSidebar"] .stTextInput input:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-    outline: none;
+  box-shadow: 0 0 0 2px var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
-/* Placeholder text color */
-[data-testid="stSidebar"] .stTextInput input::placeholder {
-    color: var(--text-secondary);
-    opacity: 1;
+/* Sidebar selectors */
+[data-testid="stSidebar"] .stSelectbox > div {
+  background: var(--surface-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
 }
 
-/* Sidebar File Uploader */
-[data-testid="stFileUploader"] {
-    border: 1px dashed var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    background-color: var(--bg-primary);
-    text-align: center;
-    transition: all var(--transition-speed) var(--transition-timing);
+[data-testid="stSidebar"] .stSelectbox div[role="listbox"] {
+  background: var(--surface-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
 }
 
-[data-testid="stFileUploader"]:hover {
-    border-color: var(--accent-primary);
-    background-color: rgba(99, 102, 241, 0.05);
+[data-testid="stSidebar"] .stSelectbox div[role="option"] {
+  color: var(--text-primary);
 }
 
-[data-testid="stFileUploader"] label {
-    font-weight: 500;
-    color: var(--text-primary);
+[data-testid="stSidebar"] .stSelectbox div[role="option"]:hover {
+  background: var(--user-message-bg);
 }
 
-[data-testid="stFileUploader"] svg {
-    color: var(--accent-primary);
+/* --- Chat Container --- */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: var(--border-radius-lg);
+  background: var(--surface-secondary);
+  backdrop-filter: var(--blur-effect);
+  -webkit-backdrop-filter: var(--blur-effect);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Sidebar Expanders (File Cards) */
-[data-testid="stSidebar"] [data-testid="stExpander"] {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    background-color: var(--bg-secondary);
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-speed) var(--transition-timing);
-    overflow: hidden;
-}
-
-[data-testid="stSidebar"] [data-testid="stExpander"]:hover {
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-md);
-}
-
-[data-testid="stSidebar"] [data-testid="stExpander"] summary {
-    font-weight: 500;
-    color: var(--text-primary);
-    padding: 0.8rem 1rem;
-    cursor: pointer;
-}
-
-[data-testid="stSidebar"] [data-testid="stExpander"] .stCodeBlock,
-[data-testid="stSidebar"] [data-testid="stExpander"] pre {
-    background-color: var(--bg-primary) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: var(--border-radius-sm);
-    padding: 0.75rem 1rem;
-    margin-top: 0.5rem;
-    color: var(--text-primary) !important;
-    font-size: 0.875rem;
-}
-
-/* --- Main Chat Area Styling --- */
-/* Main Area Header */
-.main .block-container > div:first-child h1,
-.main .block-container > div:first-child h3 {
-    color: var(--text-primary);
-    text-align: center;
-    margin-bottom: 2rem;
-    font-weight: 700;
-    font-size: 1.875rem;
-    letter-spacing: -0.025em;
-}
-
-/* Chat Input Container - Sticky */
-.stChatFloatingInputContainer {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(180deg, rgba(248, 249, 250, 0) 0%, rgba(248, 249, 250, 1) 20%);
-    padding: 2rem;
-    z-index: 10;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-/* Chat Input Box */
-[data-testid="stChatInput"] {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 0.5rem 1rem;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-speed) var(--transition-timing);
-    position: relative;
-}
-
-[data-testid="stChatInput"] > div {
-    background-color: transparent;
-}
-
-[data-testid="stChatInput"]:focus-within {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2), var(--shadow-md);
-}
-
-/* Input text */
-[data-testid="stChatInput"] textarea {
-    color: var(--text-primary);
-    font-size: 1rem;
-    line-height: 1.5;
-    padding: 0.5rem 0;
-}
-
-[data-testid="stChatInput"] textarea::placeholder {
-    color: var(--text-secondary);
-    opacity: 1;
-}
-
-/* Send button styling */
-[data-testid="stChatInput"] button[kind="icon"] {
-    background: var(--accent-primary);
-    border: none;
-    border-radius: 50%;
-    fill: white;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-speed) var(--transition-timing);
-    margin-left: 0.5rem;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-[data-testid="stChatInput"] button[kind="icon"]:hover {
-    background: var(--accent-secondary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-}
-
-[data-testid="stChatInput"] button[kind="icon"]:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-sm);
-}
-
-/* --- CHAT MESSAGE LAYOUT --- */
-
-/* Chat Messages General Style */
+/* --- Chat Messages --- */
+/* Base message styles */
 [data-testid="stChatMessage"] {
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-speed) var(--transition-timing);
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-radius: var(--border-radius-md);
+  max-width: 85%;
+  margin-bottom: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  word-break: break-word;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  animation: messageSlideIn var(--transition-slow) forwards;
 }
 
-/* USER MESSAGES (RIGHT ALIGNED) */
-[data-testid="stChatMessage"][data-testid*="user"] {
-    margin-left: auto;
-    margin-right: 1rem;
-    background-color: var(--user-message-bg);
-    border: 1px solid var(--user-message-border);
-    border-bottom-right-radius: 4px;
+/* Animation for messages appearing */
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* USER MESSAGE ARROW */
-[data-testid="stChatMessage"][data-testid*="user"]::after {
-    content: "";
-    position: absolute;
-    right: -10px;
-    bottom: 15px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid var(--user-message-bg);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-}
-
-/* AI ASSISTANT MESSAGES (LEFT ALIGNED) */
-[data-testid="stChatMessage"]:not([data-testid*="user"]) {
-    margin-right: auto;
-    margin-left: 1rem;
-    background-color: var(--assistant-message-bg);
-    border: 1px solid var(--assistant-message-border);
-    border-bottom-left-radius: 4px;
-}
-
-/* AI MESSAGE ARROW */
-[data-testid="stChatMessage"]:not([data-testid*="user"])::after {
-    content: "";
-    position: absolute;
-    left: -10px;
-    bottom: 15px;
-    width: 0;
-    height: 0;
-    border-right: 10px solid var(--assistant-message-bg);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-}
-
-/* Message Hover Effect */
+/* Message hover effect */
 [data-testid="stChatMessage"]:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* Hide default Streamlit avatar icons */
-[data-testid="stChatMessage"] [data-testid^="chatAvatarIcon-"] {
-    display: none;
+/* User messages (right-aligned) */
+[data-testid="stChatMessage"][data-testid*="user"] {
+  margin-left: auto;
+  background: var(--user-message-bg);
+  border-bottom-right-radius: 0;
+  border: var(--border-width) solid rgba(139, 92, 246, 0.3);
 }
 
-[data-testid="stChatMessage"] > div:first-child {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+/* User message arrow */
+[data-testid="stChatMessage"][data-testid*="user"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  background: var(--user-message-bg);
+  border-right: var(--border-width) solid rgba(139, 92, 246, 0.3);
+  border-bottom: var(--border-width) solid rgba(139, 92, 246, 0.3);
+  clip-path: polygon(0 0, 0% 100%, 100% 100%);
 }
 
-/* Styling for user identity label */
+/* AI messages (left-aligned) */
+[data-testid="stChatMessage"]:not([data-testid*="user"]) {
+  margin-right: auto;
+  background: var(--ai-message-bg);
+  border-bottom-left-radius: 0;
+  border: var(--border-width) solid var(--border-color);
+}
+
+/* AI message arrow */
+[data-testid="stChatMessage"]:not([data-testid*="user"])::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background: var(--ai-message-bg);
+  border-left: var(--border-width) solid var(--border-color);
+  border-bottom: var(--border-width) solid var(--border-color);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+}
+
+/* Style for sender labels */
 [data-testid="stChatMessage"]::before {
-    content: attr(data-testid);
-    position: absolute;
-    top: -1.5rem;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    text-transform: capitalize;
+  content: attr(data-testid);
+  position: absolute;
+  top: -1.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: capitalize;
 }
 
 [data-testid="stChatMessage"][data-testid*="user"]::before {
-    right: 0;
-    content: "You";
+  right: 0.5rem;
+  content: "You";
 }
 
 [data-testid="stChatMessage"]:not([data-testid*="user"])::before {
-    left: 0;
-    content: "Assistant";
+  left: 0.5rem;
+  content: "Assistant";
 }
 
-/* Styling for text content within messages */
+/* Hide default avatar icons */
+[data-testid="stChatMessage"] [data-testid^="chatAvatarIcon-"] {
+  display: none;
+}
+
+/* Message content styling */
 [data-testid="stChatMessage"] p {
-    margin: 0;
-    line-height: 1.6;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
 }
 
-[data-testid="stChatMessage"] strong {
-    font-weight: 600;
+[data-testid="stChatMessage"] p:last-child {
+  margin-bottom: 0;
 }
 
-/* Styling for Code Blocks */
-[data-testid="stChatMessage"] code { /* Inline code */
-    background-color: rgba(0, 0, 0, 0.05);
-    padding: 0.2em 0.4em;
-    font-size: 0.875em;
-    border-radius: 4px;
-    font-family: 'Fira Code', 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    color: var(--accent-secondary);
+/* --- Code Block Styling --- */
+[data-testid="stChatMessage"] code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #a78bfa; /* Violet 400 */
 }
 
-[data-testid="stChatMessage"] pre { /* Code block */
-    background-color: #1e293b !important; /* Dark background */
-    color: #e2e8f0 !important; /* Light text */
-    padding: 1rem 1.2rem;
-    overflow-x: auto;
-    margin: 0.75rem 0;
-    border-radius: var(--border-radius-sm);
-    font-family: 'Fira Code', 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    box-shadow: var(--shadow-sm);
-    border: none !important;
+[data-testid="stChatMessage"] pre {
+  background: rgba(15, 23, 42, 0.8) !important; /* Slate 900 with transparency */
+  border-radius: var(--border-radius-sm);
+  padding: 1rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  border: var(--border-width) solid rgba(139, 92, 246, 0.2) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-testid="stChatMessage"] pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+[data-testid="stChatMessage"] pre::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
 }
 
 [data-testid="stChatMessage"] pre code {
-    background-color: transparent !important;
-    padding: 0;
-    color: inherit !important;
-    font-family: inherit !important;
-    border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
-/* Download Button inside Chat Messages */
-[data-testid="stChatMessage"] .stDownloadButton>button {
-    background-color: var(--accent-primary);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    margin-top: 1rem;
-    transition: all var(--transition-speed) var(--transition-timing);
-    box-shadow: var(--shadow-sm);
-    font-weight: 500;
+/* --- Chat Input Styling --- */
+.stChatFloatingInputContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 2rem;
+  z-index: 100;
+  background: linear-gradient(to top, var(--bg-gradient-1) 50%, transparent);
 }
 
-[data-testid="stChatMessage"] .stDownloadButton>button:hover {
-    background-color: var(--accent-secondary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+[data-testid="stChatInput"] {
+  background: var(--surface-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  max-width: 1100px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-normal);
+  backdrop-filter: var(--blur-effect);
+  -webkit-backdrop-filter: var(--blur-effect);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
-[data-testid="stChatMessage"] .stDownloadButton>button:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-sm);
+[data-testid="stChatInput"]:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-lg), var(--glow-effect);
 }
 
-/* --- Utility & Misc --- */
-hr {
-    border: none;
-    border-top: 1px solid var(--border-color);
-    margin: 2rem 0;
+/* Input textarea */
+[data-testid="stChatInput"] textarea {
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  min-height: 54px;
+  max-height: 150px;
+  border: none;
+  resize: none;
 }
 
-/* Improve default Streamlit Info/Warning/Error boxes */
+[data-testid="stChatInput"] textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.8;
+}
+
+/* Send button */
+[data-testid="stChatInput"] button[kind="icon"] {
+  background: linear-gradient(90deg, var(--accent-gradient-1), var(--accent-gradient-2));
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-testid="stChatInput"] button[kind="icon"]:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: var(--shadow-md), var(--glow-effect);
+}
+
+[data-testid="stChatInput"] button[kind="icon"]:active {
+  transform: scale(0.95);
+}
+
+[data-testid="stChatInput"] button[kind="icon"] svg {
+  fill: white;
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Utility Classes & Misc --- */
+/* Improved alerts */
 [data-testid="stAlert"] {
-    border: 1px solid;
-    border-radius: var(--border-radius);
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-    box-shadow: var(--shadow-sm);
+  backdrop-filter: var(--blur-effect);
+  -webkit-backdrop-filter: var(--blur-effect);
+  border-radius: var(--border-radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-md);
+  border-width: 1px;
 }
 
-[data-testid="stAlert"] p { 
-    margin: 0; 
-    line-height: 1.6;
+[data-testid="stAlert"][data-baseweb="notification"] {
+  background: rgba(15, 23, 42, 0.7); /* Slate 900 with transparency */
 }
 
-/* Specific alert types */
-[data-testid="stAlert"][data-baseweb="alert"][role="alert"] { /* Info */
-    background-color: rgba(59, 130, 246, 0.1);
-    border-color: #60a5fa; /* Blue-400 */
-    color: #1e40af; /* Blue-800 */
+/* Info alert */
+[data-testid="stAlert"][data-baseweb="notification"][kind="info"] {
+  border-color: #60a5fa; /* Blue 400 */
 }
 
-[data-testid="stAlert"][data-baseweb="alert"][role="status"] { /* Success */
-    background-color: rgba(16, 185, 129, 0.1);
-    border-color: var(--success-color);
-    color: #065f46; /* Emerald-800 */
+/* Success alert */
+[data-testid="stAlert"][data-baseweb="notification"][kind="success"] {
+  border-color: var(--success-color);
 }
 
-[data-testid="stAlert"][data-baseweb="alert"][role="alertdialog"] { /* Error */
-    background-color: rgba(239, 68, 68, 0.1);
-    border-color: var(--error-color);
-    color: #b91c1c; /* Red-700 */
+/* Warning alert */
+[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] {
+  border-color: var(--warning-color);
 }
 
-[data-testid="stAlert"][data-baseweb="alert"][role="log"] { /* Warning */
-    background-color: rgba(245, 158, 11, 0.1);
-    border-color: var(--warning-color);
-    color: #92400e; /* Amber-800 */
+/* Error alert */
+[data-testid="stAlert"][data-baseweb="notification"][kind="error"] {
+  border-color: var(--error-color);
 }
 
-/* Typography Improvements */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--text-primary);
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-}
-
-h1 { font-size: 2rem; font-weight: 700; }
-h2 { font-size: 1.75rem; font-weight: 700; }
-h3 { font-size: 1.5rem; font-weight: 600; }
-h4 { font-size: 1.25rem; font-weight: 600; }
-h5 { font-size: 1.125rem; font-weight: 600; }
-h6 { font-size: 1rem; font-weight: 600; }
-
-/* Links styling */
-a {
-    color: var(--accent-primary);
-    text-decoration: none;
-    transition: color var(--transition-speed) var(--transition-timing);
-}
-
-a:hover {
-    color: var(--accent-secondary);
-    text-decoration: underline;
-}
-
-/* Add scrollbar styling */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-primary);
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* Slate-300 */
-    border-radius: 4px;
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8; /* Slate-400 */
+  background: rgba(139, 92, 246, 0.5);
 }
 
-/* Animations for chat messages */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Media queries for responsive design */
+@media (max-width: 991px) {
+  [data-testid="stChatMessage"] {
+    max-width: 90%;
+  }
+  
+  .stChatFloatingInputContainer {
+    padding: 1rem;
+  }
 }
 
-[data-testid="stChatMessage"] {
-    animation: fadeIn 0.3s ease forwards;
+@media (max-width: 767px) {
+  [data-testid="stChatMessage"] {
+    max-width: 95%;
+  }
+  
+  [data-testid="stChatInput"] {
+    padding: 0.3rem;
+  }
+  
+  [data-testid="stChatInput"] textarea {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+  
+  [data-testid="stChatInput"] button[kind="icon"] {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 576px) {
+  .main .block-container {
+    padding: 0.5rem;
+  }
+  
+  [data-testid="stChatMessage"] {
+    padding: 0.875rem;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
