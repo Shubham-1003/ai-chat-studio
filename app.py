@@ -7,7 +7,7 @@ from utils import llm_api, file_parser # Use the utility modules
 
 # --- Page Configuration ---
 st.set_page_config(
-    page_title="AI Chat Studio",
+    page_title="FreeLM",
     page_icon="✨",
     layout="wide" # Changed layout to 'wide'
 )
