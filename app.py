@@ -1,4 +1,4 @@
-# app.py (Updated for Streamlit Secrets & Specific NVIDIA Keys)
+# app.py (Updated for Streamlit Secrets & Specific NVIDIA Keys & New Chat)
 
 import streamlit as st
 from PIL import Image
@@ -56,7 +56,16 @@ def display_file_card(filename, metadata):
 # --- Sidebar ---
 with st.sidebar:
     st.title("✨ AI Chat Studio")
-    st.markdown("---")
+
+    # --- Add New Chat Button --- <<< NEW SECTION START
+    if st.button("➕ New Chat"):
+        st.session_state.messages = [] # Clear chat history
+        # Optionally add a default starting message?
+        # st.session_state.messages.append({"role": "system", "content": "Chat cleared. Ask me anything!"})
+        st.rerun() # Rerun the app to clear the chat display
+    # --- Add New Chat Button --- <<< NEW SECTION END
+
+    st.markdown("---") # Separator
 
     # --- Model Selection ---
     st.subheader("🤖 Model Selection")
@@ -86,38 +95,32 @@ with st.sidebar:
     # --- API Key Status (Using Secrets) ---
     st.subheader("🔑 API Keys Status")
     st.caption("Checking for API keys in `.streamlit/secrets.toml`")
-    # UPDATED Caption: Reflects model-specific keys for NVIDIA
     st.caption("Note: NVIDIA models require specific keys like 'NVIDIA_Mistral_Small_24B_Instruct' in secrets.")
 
     keys_loaded_from_secrets = {}
-    # Get the SPECIFIC key name needed for the selected model
     required_key_name_for_selected = llm_api.get_required_api_key_name(st.session_state.selected_model)
     required_key_found = False
 
     if required_key_name_for_selected:
-        # Check if that specific key name exists in secrets
         if required_key_name_for_selected in st.secrets:
             keys_loaded_from_secrets[required_key_name_for_selected] = st.secrets[required_key_name_for_selected]
             required_key_found = True
         else:
             st.warning(f"Required key ('{required_key_name_for_selected}') for {st.session_state.selected_model} missing in secrets.toml.", icon="⚠️")
     else:
-        # Should not happen for models in SUPPORTED_MODELS if mapped correctly
-        st.error(f"Could not determine required API key name for {st.session_state.selected_model}.")
-        required_key_found = False # Treat as not found if mapping is missing
+        st.info(f"No specific API key required for {st.session_state.selected_model}.") # Clarified message
+        required_key_found = True # Treat as found if none is required
 
-    st.session_state.api_keys = keys_loaded_from_secrets # Store the found key(s)
+    st.session_state.api_keys = keys_loaded_from_secrets
 
     if not required_key_found and required_key_name_for_selected:
-        # Make error message clearer about the specific missing key
         st.error(f"Please add the key '{required_key_name_for_selected}' to your .streamlit/secrets.toml file and restart.")
         st.session_state.stop_app = True
     elif required_key_found:
-        st.success(f"Required API key ('{required_key_name_for_selected}') for {st.session_state.selected_model} found.", icon="✅")
+        st.success(f"Required API key ('{required_key_name_for_selected}') found for {st.session_state.selected_model}.", icon="✅")
         st.session_state.stop_app = False
-    # Handle the case where no key is required (e.g. local model later)
     elif not required_key_name_for_selected:
-         st.info(f"No specific API key required for {st.session_state.selected_model}.")
+         # Condition where no key is needed, app should not stop
          st.session_state.stop_app = False
 
 
@@ -173,6 +176,7 @@ if st.session_state.stop_app:
 
 st.header(f"Chat with {st.session_state.selected_model}")
 
+# Display messages (will be empty after New Chat is clicked and rerun)
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
@@ -206,7 +210,7 @@ if prompt:
             response_text, generated_file_info = llm_api.get_llm_response(
                 model_display_name=st.session_state.selected_model,
                 messages=history_for_llm,
-                api_keys=st.session_state.api_keys, # Pass the dict containing the SPECIFIC key found
+                api_keys=st.session_state.api_keys,
                 uploaded_file_context=file_context_for_llm,
                 model_capabilities=current_model_capabilities
             )
@@ -225,7 +229,7 @@ if prompt:
                      st.warning(f"Cannot generate download for non-text/bytes generated content: {generated_file_info.get('filename')}")
             st.session_state.messages.append(assistant_message)
         except Exception as e:
-            st.error(f"An error occurred: {e}") # Display the specific error
+            st.error(f"An error occurred: {e}")
             error_message = f"Sorry, I encountered an error trying to get a response. Please check API keys and model availability. Error: {e}"
             if not st.session_state.messages or st.session_state.messages[-1].get("content") != error_message:
                 st.session_state.messages.append({"role": "assistant", "content": error_message})
