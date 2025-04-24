@@ -7,12 +7,17 @@ from utils.llm_api import get_response, APIError # This line should now work cor
 # Maps the model selection name to the key name expected in secrets.toml
 SECRETS_KEY_MAPPING = {
     "OpenAI": "OPENAI_API_KEY",
-    "Gemini": "GOOGLE_API_KEY", # Matches your secrets.toml
+    "Gemini": "GOOGLE_API_KEY",
     "Claude": "ANTHROPIC_API_KEY",
     "Mistral": "MISTRAL_API_KEY",
-    # Add Groq if you have a key for it in secrets.toml, e.g.:
-    # "Groq": "GROQ_API_KEY"
-    # Note: The NVIDIA keys in your example secrets aren't used by the current llm_api.py
+    # Add Groq if you have a key for it in secrets.toml
+    # "Groq": "GROQ_API_KEY",
+
+    # --- ADD NVIDIA MAPPINGS ---
+    # Use user-friendly display names on the left, exact secret key names on the right
+    "NVIDIA Mistral Small": "NVIDIA_Mistral_Small_24B_Instruct",
+    "NVIDIA DeepSeek Qwen": "NVIDIA_DeepSeek_R1_Distill_Qwen_32B",
+    # Add more NVIDIA models here if needed
 }
 
 # Function to load local CSS file
@@ -30,52 +35,59 @@ try:
     st.set_page_config(page_title="LLM Chat App", layout="wide")
 
     # --- Load the external CSS file ---
-    load_css("css/style.css") # Assuming style.css is inside a 'css' folder
+    load_css("css/style.css")
 
     # --- Main App UI ---
     st.markdown("# 🧠 LLM Chat Interface")
 
-
     with st.sidebar:
         st.header("Model Settings")
-        AVAILABLE_MODELS = ["Gemini", "OpenAI", "Claude", "Mistral", "Groq"] # Add/remove based on available keys/code
-        # Filter available models based on whether their key is in secrets (optional but good practice)
-        models_with_keys = [name for name, key in SECRETS_KEY_MAPPING.items() if st.secrets.get(key)]
+
+        # --- UPDATED AVAILABLE MODELS ---
+        # Define all models you want to potentially offer
+        ALL_POSSIBLE_MODELS = [
+            "Gemini", "OpenAI", "Claude", "Mistral", "Groq", # Existing
+            "NVIDIA Mistral Small", "NVIDIA DeepSeek Qwen"  # Added NVIDIA
+        ]
+
+        # Filter available models based on keys ACTUALLY PRESENT in secrets
+        # This prevents showing models for which keys are missing
+        models_with_keys = [
+            name for name in ALL_POSSIBLE_MODELS
+            if SECRETS_KEY_MAPPING.get(name) and st.secrets.get(SECRETS_KEY_MAPPING[name])
+        ]
+        # Add a check if Groq key exists if Groq is in ALL_POSSIBLE_MODELS but not SECRETS_KEY_MAPPING yet
+        # if "Groq" in ALL_POSSIBLE_MODELS and st.secrets.get("GROQ_API_KEY"):
+        #     models_with_keys.append("Groq") # Assuming GROQ_API_KEY is the secret name
+
         if not models_with_keys:
-             st.error("No API keys found in Streamlit Secrets. Please add keys to `.streamlit/secrets.toml`.")
-             st.stop() # Stop execution if no keys are available
+             st.error("No valid API keys found in Streamlit Secrets. Please add keys to `.streamlit/secrets.toml`.")
+             st.stop()
 
         # Only show models for which keys are available
         model_name = st.selectbox("Select LLM Model", options=models_with_keys)
 
         temperature = st.slider("Temperature", 0.0, 1.0, 0.5,
-                                help="Controls randomness. Lower values make the output more deterministic, higher values make it more creative.")
-        max_tokens = st.slider("Max Tokens", 100, 2048, 512,
-                               help="Maximum number of tokens (words/subwords) the model should generate.")
+                                help="Controls randomness.")
+        max_tokens = st.slider("Max Tokens", 100, 2048, 512, # Adjust range as needed
+                               help="Maximum number of tokens to generate.")
 
-        # --- REMOVED API Key text input ---
-        # api_key = st.text_input("API Key", type="password", help=api_key_help) # No longer needed if using secrets
-
-        # Optional: Display which key is being used (useful for debugging)
-        # key_to_display = SECRETS_KEY_MAPPING.get(model_name, "N/A")
-        # st.caption(f"Using key: secrets.{key_to_display}")
-
+        # Removed API Key text input
 
     # Initialize chat history
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    # --- Chat message display area ---
+    # Display messages
     for role, msg in st.session_state.chat_history:
         with st.chat_message(role):
             st.markdown(msg)
 
-
-    # --- Chat input area ---
+    # Get user input
     user_input = st.chat_input("Ask your question...")
 
     if user_input:
-        # --- Retrieve API Key from Secrets ---
+        # Retrieve API Key from Secrets
         retrieved_api_key = None
         secret_key_name = SECRETS_KEY_MAPPING.get(model_name)
 
@@ -87,31 +99,28 @@ try:
             retrieved_api_key = st.secrets[secret_key_name]
         except KeyError:
             st.error(f"API Key Error: Key '{secret_key_name}' not found in Streamlit Secrets (`.streamlit/secrets.toml`).")
-            st.stop() # Stop if key is missing
+            st.stop()
 
         if not retrieved_api_key:
              st.error(f"API Key Error: Key '{secret_key_name}' found in Streamlit Secrets but is empty.")
-             st.stop() # Stop if key is empty
+             st.stop()
 
-        # --- Process Input ---
-        # Append and display user message
+        # Process Input
         st.session_state.chat_history.append(("user", user_input))
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        # Get and display assistant response
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
-                    # Call get_response with the key from secrets
                     output = get_response(
                         prompt=user_input,
-                        model=model_name,
+                        model=model_name, # Pass the display name
                         temperature=temperature,
                         max_tokens=max_tokens,
-                        api_key=retrieved_api_key # Pass the key retrieved from secrets
+                        api_key=retrieved_api_key # Pass the key from secrets
                     )
-                    st.markdown(output) # Display response
+                    st.markdown(output)
                     st.session_state.chat_history.append(("assistant", output))
 
                 except APIError as e:
@@ -124,16 +133,10 @@ try:
                     print("--- End Traceback ---")
                     st.error(f"An unexpected application error occurred: {type(e).__name__}")
 
-
-# --- Catching errors happening before/during Streamlit setup ---
+# --- Error Handling Blocks (remain the same) ---
 except ImportError as e:
-    error_message = f"Import Error: Failed to import necessary code. Please check file structure and installations. Is 'requests' installed? Details: {e}"
-    st.error(error_message)
-    print(f"Import Error: {e}")
-    traceback.print_exc()
+    error_message = f"Import Error: ... Details: {e}" # Simplified
+    st.error(error_message); print(f"Import Error: {e}"); traceback.print_exc()
 except Exception as e:
-    error_message = f"A critical error occurred while starting the application. Error Type: {type(e).__name__}. Details: {e}"
-    st.error(error_message)
-    print("--- CRITICAL STARTUP ERROR ---")
-    traceback.print_exc()
-    print("--- END CRITICAL STARTUP ERROR ---")
+    error_message = f"A critical error occurred... Details: {e}" # Simplified
+    st.error(error_message); print("--- CRITICAL STARTUP ERROR ---"); traceback.print_exc(); print("--- END ---")
