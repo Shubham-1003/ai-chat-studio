@@ -1,5 +1,3 @@
 # utils/__init__.py
 
-# This file MUST BE EMPTY or contain only comments.
-# It marks 'utils' as a Python package.
-# Delete any 'from .llm_api import ...' lines.
+from .llm_api import get_llm_response, SUPPORTED_MODELS, get_model_capabilities #<- This line is incorrect and causing the crash
