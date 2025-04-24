@@ -1,47 +1,55 @@
-# app.py
-
 import streamlit as st
-from utils.llm_api import get_llm_response, check_llm_server
+from utils.llm_api import get_response
 
-# Set Streamlit page config
-st.set_page_config(page_title="Multi-LLM Chat", layout="wide")
-st.title("🧠 Chat with Multiple LLM APIs")
+st.set_page_config(page_title="LLM Chat App", layout="wide")
 
-# Sidebar for model selection
+# Apply a cleaner, modern design
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #f4f4f9;
+    }
+    .stTextInput>div>div>input {
+        background-color: white;
+    }
+    .stChatMessage {
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.title("🧠 LLM Chat Interface")
+
 with st.sidebar:
-    st.header("Choose Your Model")
-    selected_model = st.selectbox("Select Model", [
-        "meta/llama3-8b-instruct",
-        "mistralai/mixtral-8x7b-instruct",
-        "google/gemma-7b-it",
-        "phi3",
-        "openhermes",
-        "dolphin-mixtral"
-    ])
-    st.markdown(f"**Selected Model:** `{selected_model}`")
+    st.header("Model Settings")
+    model_name = st.selectbox("Select LLM Model", options=["Gemini", "OpenAI", "Claude", "Mistral", "Groq"])
+    temperature = st.slider("Temperature", 0.0, 1.0, 0.5)
+    max_tokens = st.slider("Max Tokens", 100, 2048, 512)
+    api_key = st.text_input("API Key (if required)", type="password")
 
-# Show warning if server is down
-if not check_llm_server():
-    st.error("❌ LLM server is not reachable. Please start Ollama or check port 11434.")
-    st.stop()
+# Store the chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+for i, (role, msg) in enumerate(st.session_state.chat_history):
+    with st.chat_message(role):
+        st.markdown(msg)
 
-# Show previous messages
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+user_input = st.chat_input("Ask your question...")
 
-# Input for new prompt
-if prompt := st.chat_input("Ask your question here..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+if user_input:
+    st.session_state.chat_history.append(("user", user_input))
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(user_input)
 
-    # Get and show LLM response
     with st.chat_message("assistant"):
-        response = get_llm_response(prompt, selected_model)
-        st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        with st.spinner("Thinking..."):
+            try:
+                output = get_response(user_input, model=model_name, temperature=temperature, max_tokens=max_tokens, api_key=api_key)
+                st.markdown(output)
+                st.session_state.chat_history.append(("assistant", output))
+            except Exception as e:
+                st.error(f"Error communicating with LLM API: {e}")
