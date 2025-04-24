@@ -1,6 +1,6 @@
 import streamlit as st
 # Import the updated get_response function and the custom error class
-from utils.llm_api import get_response, APIError
+from utils.llm_api import get_response, APIError # Make sure utils.llm_api points to the updated file
 
 st.set_page_config(page_title="LLM Chat App", layout="wide")
 
@@ -28,7 +28,6 @@ st.markdown(
 
 # Using markdown for title with emoji
 st.markdown("# 🧠 LLM Chat Interface")
-# st.title("🧠 LLM Chat Interface") # Alternative way
 
 with st.sidebar:
     st.header("Model Settings")
@@ -41,8 +40,13 @@ with st.sidebar:
                             help="Controls randomness. Lower values make the output more deterministic, higher values make it more creative.")
     max_tokens = st.slider("Max Tokens", 100, 2048, 512, # Adjust max range if needed for specific models
                            help="Maximum number of tokens (words/subwords) the model should generate.")
-    api_key = st.text_input("API Key (required)", type="password",
-                            help=f"Enter your API key for the selected '{model_name}' model.")
+    # Update help text based on the check inside get_response
+    api_key_help = "Enter your API key."
+    if model_name in ["OpenAI", "Gemini", "Claude", "Mistral", "Groq"]:
+        api_key_help = f"Enter your API key for the selected '{model_name}' model (Required)."
+
+    api_key = st.text_input("API Key", type="password", help=api_key_help)
+
 
 # Initialize chat history in session state if it doesn't exist
 if "chat_history" not in st.session_state:
@@ -83,14 +87,16 @@ if user_input:
             # Catch specific API errors from llm_api.py
             except APIError as e:
                 st.error(f"API Communication Error: {e}")
-                # Optionally add the error indication to chat history (user might want to know it failed)
+                # Optionally add the error indication to chat history
                 # st.session_state.chat_history.append(("assistant", f"Error: {e}"))
-            # Catch errors like missing API key *before* calling the API (though get_response handles it now)
+            # Catch configuration errors like unsupported model
             except ValueError as e:
                  st.error(f"Configuration Error: {e}")
-            # Catch any other unexpected errors
+            # Catch any other unexpected errors during Streamlit execution
             except Exception as e:
-                st.error(f"An unexpected application error occurred: {e}")
-                # Log the full traceback for debugging if needed
-                # import traceback
-                # st.error(f"Traceback: {traceback.format_exc()}")
+                st.error(f"An unexpected application error occurred: {type(e).__name__} - {e}")
+                # For debugging, you might want to log the full traceback
+                import traceback
+                print(f"Traceback: {traceback.format_exc()}") # Print traceback to console where streamlit runs
+                # Consider showing a simplified error or logging more formally in production
+                # st.error("An unexpected error occurred. Please check the logs or contact support.")
